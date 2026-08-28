@@ -90,7 +90,6 @@ html #wng-ds .ds-plan.featured .ds-plan-label{
 }
 
 /* cinza-azulado como TEXTO sobre o azul-marinho */
-html #wng-footer .wng-badge,
 html #wng-footer .wng-col-brand .wng-brand-detail,
 html #wng-footer .wng-col-list li a,
 html #wng-footer .wng-legal-info,
@@ -99,6 +98,11 @@ html #wng-footer .wng-bottom-left,
 html #wng-footer .wng-bottom-right a{
   color: var(--wng-cinza-navy);
 }
+
+/* O badge tem fundo proprio: o par certo e branco sobre o fundo dele.
+   O original dava 4,31:1 -- perto, mas abaixo dos 4,5:1 que texto de 12px
+   pede. Escurecido mantendo matiz e saturacao: 4,56:1. */
+html #wng-footer .wng-badge{ background:#677695; color:#fff }
 
 
 /* =====================================================================
@@ -483,3 +487,192 @@ html #wng-cookie-banner button[class*="decline"]{
   color: #fff;
   border-color: rgba(255,255,255,.55);
 }
+
+
+/* =====================================================================
+   11. CATÁLOGO DE DESIGNS  (vehicle-wraps · marine-wraps · architectural-glass)
+   ---------------------------------------------------------------------
+   Aparência das três páginas de catálogo. O comportamento está em
+   wng-catalogo.js. Contraste, alvo de toque e movimento seguem as mesmas
+   regras das seções anteriores.
+   ===================================================================== */
+
+/* o tema nao aplica border-box no meu bloco. Sem isto, todo `width:100%`
+   dentro de um pai com padding vira estouro -- e a barra de rolagem
+   horizontal aparece sem motivo. */
+html .wcat, html .wcat *, html .wcat-painel, html .wcat-painel *{ box-sizing:border-box }
+
+html .wcat{ max-width:1100px; margin:0 auto; padding:44px 20px 80px }
+
+/* --- aviso de protótipo: precisa ser impossível de confundir --------- */
+html .wcat-aviso{
+  background:#FFF6E8; border:1px solid #E9D5AE; border-left:4px solid #B07A16;
+  border-radius:6px; padding:14px 16px; margin:0 0 34px;
+  font-size:14px; line-height:1.55; color:#4A3A17;
+}
+html .wcat-aviso code{
+  background:#F3E4C6; padding:1px 5px; border-radius:3px; font-size:13px;
+}
+
+/* --- cabeçalho da categoria ----------------------------------------- */
+html .wcat-cab{ margin:0 0 30px }
+html .wcat-cab h1{
+  font-size:clamp(28px,5vw,46px); line-height:1.04; letter-spacing:-.02em;
+  color:var(--wng-navy); margin:0 0 10px; text-transform:uppercase; font-weight:900;
+}
+html .wcat-cab p{ margin:0 0 6px; color:#4a5568; font-size:16px; max-width:60ch }
+html .wcat-cont{
+  font-size:13px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--wng-pink-sobre-claro); font-weight:700;
+}
+
+/* --- a grade --------------------------------------------------------- */
+html .wcat-grade{
+  list-style:none; margin:0; padding:0;
+  display:grid; gap:20px;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+}
+html .wcat-cartao{
+  display:block; width:100%; padding:0; border:1px solid #E3E7ED; background:#fff;
+  border-radius:10px; overflow:hidden; cursor:pointer; text-align:left;
+  transition:border-color 160ms cubic-bezier(.23,1,.32,1),
+             box-shadow 160ms cubic-bezier(.23,1,.32,1),
+             transform 160ms cubic-bezier(.23,1,.32,1);
+}
+@media (hover:hover) and (pointer:fine){
+  html .wcat-cartao:hover{
+    border-color:var(--wng-navy);
+    box-shadow:0 8px 22px -10px rgba(0,32,70,.35);
+    transform:translateY(-2px);
+  }
+}
+html .wcat-cartao:focus-visible{ outline:3px solid var(--wng-pink-sobre-claro); outline-offset:2px }
+html .wcat-arte{ display:block; aspect-ratio:300/160; background:#F5F7FA }
+html .wcat-arte svg{ width:100%; height:100%; display:block }
+html .wcat-info{ display:block; padding:14px 16px 16px }
+html .wcat-nome{ display:block; font-weight:800; color:var(--wng-navy); font-size:17px }
+html .wcat-ref{
+  display:block; font-size:12px; letter-spacing:.1em; color:#5b6880;
+  text-transform:uppercase; margin-top:3px;
+}
+html .wcat-preco{
+  display:block; margin-top:10px; font-size:13px; font-weight:700;
+  color:var(--wng-pink-sobre-claro); letter-spacing:.04em;
+}
+
+/* --- o painel de personalização -------------------------------------- */
+html .wcat-painel{
+  border:0; border-radius:12px; padding:0; width:min(940px,94vw);
+  max-height:88vh; overflow-y:auto; overflow-x:hidden;
+  box-shadow:0 26px 70px -24px rgba(0,32,70,.5);
+}
+/* entrada: 220ms, ease-out forte, a partir de 0.96 — nunca de scale(0).
+   Modal é exceção à regra do transform-origin: não sai de um gatilho. */
+@keyframes wcatEntra{ from{ opacity:0; transform:scale(.96) } to{ opacity:1; transform:none } }
+@keyframes wcatFundo{ from{ opacity:0 } to{ opacity:1 } }
+html .wcat-painel[open]{ animation:wcatEntra 220ms cubic-bezier(.23,1,.32,1) }
+html .wcat-painel[open]::backdrop{ animation:wcatFundo 220ms cubic-bezier(.23,1,.32,1) }
+@media (prefers-reduced-motion:reduce){
+  html .wcat-painel[open]{ animation:wcatFundo 160ms ease }
+}
+html .wcat-painel::backdrop{ background:rgba(0,32,70,.55) }
+html .wcat-fechar-form{ position:absolute; top:8px; right:8px; margin:0; z-index:2 }
+html .wcat-fechar{
+  width:44px; height:44px; border:0; background:transparent; cursor:pointer;
+  font-size:26px; line-height:1; color:var(--wng-navy); border-radius:8px;
+}
+html .wcat-fechar:hover{ background:#EEF1F5 }
+html .wcat-fechar:focus-visible{ outline:3px solid var(--wng-pink-sobre-claro); outline-offset:-3px }
+
+html .wcat-corpo{ display:grid; grid-template-columns:1.05fr .95fr }
+@media (max-width:760px){ html .wcat-corpo{ grid-template-columns:1fr } }
+/* a arte fica presa no TOPO da coluna e acompanha a rolagem.
+   Antes ela era centralizada numa coluna que estica junto com as opções
+   (medido: 782px de coluna para 205px de arte) — em tela baixa a arte
+   sumia para fora do painel e parecia quebrado. */
+html .wcat-previa{ background:#F5F7FA; display:flex; align-items:flex-start }
+html .wcat-previa svg{ width:100%; height:auto; display:block; position:sticky; top:0 }
+html .wcat-opcoes{ padding:30px 30px 34px }
+html .wcat-opcoes h2{
+  margin:2px 0 22px; font-size:27px; font-weight:900; color:var(--wng-navy);
+  letter-spacing:-.01em;
+}
+
+html .wcat-grupo{ border:0; padding:0; margin:0 0 22px }
+html .wcat-grupo legend{
+  padding:0; font-size:13px; font-weight:700; letter-spacing:.1em;
+  text-transform:uppercase; color:#4a5568; margin-bottom:10px;
+}
+
+/* amostras de cor: 44px, com anel de seleção */
+html .wcat-amostras{ display:flex; flex-wrap:wrap; gap:10px }
+html .wcat-amostra{
+  width:44px; height:44px; border-radius:50%; cursor:pointer;
+  background:var(--c); border:2px solid transparent;
+  box-shadow:0 0 0 1px rgba(0,32,70,.16) inset;
+  transition:transform 140ms cubic-bezier(.23,1,.32,1);
+}
+/* 3:1 e o minimo da WCAG 1.4.11 para o contorno de um controle.
+   Com .38 dava 2,36:1 e a amostra branca sumia no fundo branco. */
+html .wcat-amostra.clara{ box-shadow:0 0 0 1.5px rgba(0,32,70,.55) inset }
+html .wcat-amostra.ativa{
+  border-color:var(--wng-navy);
+  box-shadow:0 0 0 2px #fff inset, 0 0 0 1px rgba(0,32,70,.2);
+}
+@media (hover:hover) and (pointer:fine){
+  html .wcat-amostra:hover{ transform:scale(1.08) }
+}
+html .wcat-amostra:focus-visible{ outline:3px solid var(--wng-pink-sobre-claro); outline-offset:2px }
+
+/* tamanhos */
+html .wcat-tams{ display:flex; flex-wrap:wrap; gap:10px }
+html .wcat-tam{
+  min-width:64px; min-height:44px; padding:6px 14px; cursor:pointer;
+  border:1.5px solid #D5DBE3; background:#fff; border-radius:8px;
+  font-weight:800; color:var(--wng-navy); font-size:15px; line-height:1.1;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+html .wcat-tam small{ display:block; font-size:11px; font-weight:600; color:#5b6880; margin-top:2px }
+html .wcat-tam.ativa{ border-color:var(--wng-navy); background:#EEF2F7 }
+@media (hover:hover) and (pointer:fine){ html .wcat-tam:hover{ border-color:var(--wng-navy) } }
+html .wcat-tam:focus-visible{ outline:3px solid var(--wng-pink-sobre-claro); outline-offset:2px }
+
+html .wcat-resumo{
+  margin:24px 0 4px; font-size:15px; color:#3d4757; line-height:1.5;
+  padding-top:18px; border-top:1px solid #E3E7ED;
+}
+html .wcat-precao{
+  margin:0 0 18px; font-size:22px; font-weight:900;
+  color:var(--wng-pink-sobre-claro); letter-spacing:-.01em;
+}
+html .wcat-cta{
+  width:100%; min-height:52px; border:1.5px dashed #C3CCD8; border-radius:8px;
+  background:#F7F9FB; color:var(--wng-navy); font-weight:800; font-size:15px;
+  letter-spacing:.03em; cursor:not-allowed;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+}
+html .wcat-cta span{ font-size:12px; font-weight:600; letter-spacing:.01em; color:#54617a }
+
+html .sr{
+  position:absolute; width:1px; height:1px; overflow:hidden;
+  clip:rect(0 0 0 0); white-space:nowrap;
+}
+
+@media (prefers-reduced-motion:reduce){
+  html .wcat-cartao, html .wcat-amostra{ transition:none }
+  html .wcat-cartao:hover{ transform:none }
+  html .wcat-amostra:hover{ transform:none }
+}
+
+/* aviso de que o catálogo precisa de JavaScript (a página não fica muda) */
+html .wcat-noscript{
+  background:#FDECEF; border:1px solid #F3B9C5; border-radius:6px;
+  padding:14px 16px; margin:26px 0 0; font-size:15px; color:#6B1327;
+}
+
+
+/* --- banner de cookies: os dois links estavam a 4,38:1 sobre o navy ------
+   Texto de 12px precisa de 4,5:1. O token de rosa-sobre-navy (4,60:1) ja
+   existia na seção 1 e só não tinha sido aplicado aqui. Corrige as 14
+   páginas de uma vez, porque o banner é o mesmo em todas. */
+html #wng-cookie-banner a{ color:var(--wng-pink-sobre-navy) }
