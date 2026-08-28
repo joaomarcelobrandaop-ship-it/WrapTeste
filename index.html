@@ -354,9 +354,18 @@ var wcpayAssets = {"url":"/wp-content/plugins/woocommerce-payments/dist/"};
 </style>
 
 <script>
-/* Move a faixa larga para dentro do container do cabeçalho, e liga a
-   animação só na home e só na primeira vez da sessão.
-   Qualquer erro aqui não faz nada — o logo já está visível. */
+/* Move a faixa larga para dentro do cabeçalho e liga a animação.
+
+   Só na home. Nas páginas internas o logo aparece pronto.
+
+   A animação espera o evento `load` e dois quadros pintados. Sem isso
+   ela rodaria durante o carregamento: medido no site publicado, a
+   página leva ~2 s para ficar pronta e a faixa dura 1,57 s — passava
+   inteira antes de a pessoa ver a tela.
+
+   requestAnimationFrame não dispara em aba de segundo plano, o que aqui
+   é bom: se a página abrir numa aba que ninguém está vendo, a animação
+   espera. */
 (function () {
   try {
     var bloco = document.currentScript ? document.currentScript.parentElement : document;
@@ -364,37 +373,15 @@ var wcpayAssets = {"url":"/wp-content/plugins/woocommerce-payments/dist/"};
     var faixa = bloco.querySelector('.wng-faixa') || document.querySelector('.wng-faixa');
     if (!marca || !faixa) return;
 
-    /* o cabeçalho é o grupo que contém a marca E o menu */
     var cab = marca.closest('header') || marca.closest('.wp-block-group') || marca.parentElement;
     if (!cab) return;
     cab.classList.add('wng-cab');
     cab.insertBefore(faixa, cab.firstChild);
 
-    /* Só na home. Nas páginas internas o logo aparece pronto — foi por
-       isso que o portão de "uma vez por sessão" saiu: quem navega
-       Shop → Services → Digital Solutions já não vê animação nenhuma,
-       porque essas páginas nem entram aqui.
-
-       Sobrava proteger contra quem volta à home várias vezes na mesma
-       visita, o que é raro — e o preço era a animação ficar invisível
-       para quem recarrega a página, inclusive na hora de mostrar ao
-       cliente. Toca em toda carga da home. */
     var eHome = document.body.classList.contains('home') ||
                 location.pathname === '/' || location.pathname === '/index.html';
     if (!eHome) return;
 
-    /* ⚠️ ESPERAR A PÁGINA CARREGAR ANTES DE ANIMAR.
-       Este script roda enquanto o HTML ainda está sendo lido. Se a
-       animação começasse aqui, ela rodaria durante o carregamento e
-       teria acabado antes de a pessoa ver a tela.
-       Medido no site publicado: a página leva ~2 s para ficar pronta,
-       e a faixa larga dura 1,57 s — ou seja, passava inteira antes.
-       Agora começa depois do `load` e de um quadro pintado. */
-       E o `requestAnimationFrame` não dispara em aba de segundo plano —
-       o que aqui é bom: se a página abrir numa aba que a pessoa não
-       está vendo, a animação espera ela olhar em vez de rodar sozinha.
-       Por isso a marca de "já viu" só é gravada quando a animação
-       de fato começa, e não antes. */
     var ligar = function () {
       requestAnimationFrame(function () {
         requestAnimationFrame(function () { cab.classList.add('anima'); });
@@ -406,6 +393,7 @@ var wcpayAssets = {"url":"/wp-content/plugins/woocommerce-payments/dist/"};
   } catch (e) { /* sem animação; o logo continua visível */ }
 })();
 </script>
+
 
 
 
