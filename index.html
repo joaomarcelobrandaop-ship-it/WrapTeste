@@ -378,10 +378,25 @@ var wcpayAssets = {"url":"/wp-content/plugins/woocommerce-payments/dist/"};
     if (!forcar && sessionStorage.getItem('wngLogoVisto')) return;
     sessionStorage.setItem('wngLogoVisto', '1');
 
-    cab.classList.add('anima');
+    /* ⚠️ ESPERAR A PÁGINA CARREGAR ANTES DE ANIMAR.
+       Este script roda enquanto o HTML ainda está sendo lido. Se a
+       animação começasse aqui, ela rodaria durante o carregamento e
+       teria acabado antes de a pessoa ver a tela.
+       Medido no site publicado: a página leva ~2 s para ficar pronta,
+       e a faixa larga dura 1,57 s — ou seja, passava inteira antes.
+       Agora começa depois do `load` e de um quadro pintado. */
+    var ligar = function () {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { cab.classList.add('anima'); });
+      });
+    };
+    if (document.readyState === 'complete') ligar();
+    else window.addEventListener('load', ligar, { once: true });
+
   } catch (e) { /* sem animação; o logo continua visível */ }
 })();
 </script>
+
 
 
 
