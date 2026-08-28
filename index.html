@@ -376,7 +376,6 @@ var wcpayAssets = {"url":"/wp-content/plugins/woocommerce-payments/dist/"};
 
     var forcar = location.search.indexOf('logo') > -1;
     if (!forcar && sessionStorage.getItem('wngLogoVisto')) return;
-    sessionStorage.setItem('wngLogoVisto', '1');
 
     /* ⚠️ ESPERAR A PÁGINA CARREGAR ANTES DE ANIMAR.
        Este script roda enquanto o HTML ainda está sendo lido. Se a
@@ -385,9 +384,17 @@ var wcpayAssets = {"url":"/wp-content/plugins/woocommerce-payments/dist/"};
        Medido no site publicado: a página leva ~2 s para ficar pronta,
        e a faixa larga dura 1,57 s — ou seja, passava inteira antes.
        Agora começa depois do `load` e de um quadro pintado. */
+       E o `requestAnimationFrame` não dispara em aba de segundo plano —
+       o que aqui é bom: se a página abrir numa aba que a pessoa não
+       está vendo, a animação espera ela olhar em vez de rodar sozinha.
+       Por isso a marca de "já viu" só é gravada quando a animação
+       de fato começa, e não antes. */
     var ligar = function () {
       requestAnimationFrame(function () {
-        requestAnimationFrame(function () { cab.classList.add('anima'); });
+        requestAnimationFrame(function () {
+          try { sessionStorage.setItem('wngLogoVisto', '1'); } catch (e) {}
+          cab.classList.add('anima');
+        });
       });
     };
     if (document.readyState === 'complete') ligar();
@@ -396,6 +403,7 @@ var wcpayAssets = {"url":"/wp-content/plugins/woocommerce-payments/dist/"};
   } catch (e) { /* sem animação; o logo continua visível */ }
 })();
 </script>
+
 
 
 
