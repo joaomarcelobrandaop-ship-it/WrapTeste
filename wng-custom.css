@@ -1,33 +1,349 @@
 /* =====================================================================
-   WRAP N GLASS - CSS de trabalho (Sites JM)
-   ---------------------------------------------------------------------
-   TUDO que a gente escrever de CSS mora AQUI, em arquivo unico.
+   WRAP N GLASS — CSS de correção
+   Sites JM · 28/08/2026 · resposta a specs/auditoria-tecnica.md
+   =====================================================================
 
-   Por que: no WordPress isso vira, sem alterar uma virgula,
-   Aparencia -> Personalizar -> CSS adicional.
-   E o CSS adicional do WordPress e injetado por ULTIMO, igual a este
-   arquivo esta injetado por ultimo no <head> do espelho.
-   Entao a cascata se comporta igual nos dois lugares.
+   ⚠️ LEIA ISTO ANTES DE MEXER — descoberta feita testando, em 28/08
 
-   REGRA: nunca editar o CSS do tema. So este arquivo.
+   Os blocos escritos à mão (#wng-ds, #wng-bc, #wng-footer) põem o CSS
+   deles num <style> DENTRO DO <body>. O "CSS adicional" do WordPress, e
+   este arquivo, ficam no <head> — ou seja, ANTES.
+
+   Em CSS, empate de especificidade é decidido por ordem: quem vem
+   depois vence. Então CSS adicional NÃO sobrescreve esses blocos se
+   usar os mesmos seletores.
+
+   A saída é vencer por ESPECIFICIDADE, não por ordem: todo seletor
+   daqui leva `html ` na frente. Isso o deixa em (1,0,2) contra o
+   (1,0,1) do bloco — e aí a ordem não importa mais.
+
+   É por isso que os seletores abaixo parecem redundantes. Não são.
    ===================================================================== */
 
-/* --------------------------------------------------------------- */
-/*  1. TOKENS  -  as cores que ja existem no site, nomeadas          */
-/* --------------------------------------------------------------- */
+
+/* =====================================================================
+   1. TOKENS
+   ---------------------------------------------------------------------
+   O rosa da marca NÃO muda. #FF2362 segue sendo a cor do Wrap N Glass
+   em tudo que é gráfico — traços, ícones, bordas.
+
+   Entram duas variantes, calculadas (não escolhidas no olho) para
+   cruzar o mínimo de 4,5:1 da WCAG AA, preservando matiz e saturação:
+
+     #e90043  rosa para SUPERFÍCIE COM TEXTO BRANCO em cima  → 4,60:1
+     #ff2d69  rosa para TEXTO sobre o azul-marinho           → 4,50:1
+     #7a87a3  cinza-azulado para TEXTO sobre o azul-marinho  → 4,51:1
+
+   Antes: 3,70:1 · 4,38:1 · 3,76:1 — as três reprovavam.
+   ===================================================================== */
 :root{
-  --wng-navy:  #002046;   /* azul do logo e dos titulos */
-  --wng-pink:  #FF2362;   /* rosa do N e dos botoes */
+  --wng-navy:            #002046;  /* azul da marca — inalterado */
+  --wng-pink:            #FF2362;  /* rosa da marca — inalterado */
+  --wng-pink-superficie: #e90043;  /* fundo rosa que carrega texto branco */
+  --wng-pink-fundo-hover:#d1003c;  /* um passo mais escuro: 5,45:1 */
+  --wng-pink-sobre-navy: #ff2d69;  /* rosa como TEXTO sobre navy */
+  --wng-cinza-navy:      #7a87a3;  /* cinza-azulado como TEXTO sobre navy */
 }
 
-/* --------------------------------------------------------------- */
-/*  2. LOGO  -  (vazio por enquanto)                                 */
-/* --------------------------------------------------------------- */
 
-/* --------------------------------------------------------------- */
-/*  3. LAYOUT E ALINHAMENTOS  -  (vazio por enquanto)                */
-/* --------------------------------------------------------------- */
+/* =====================================================================
+   2. CONTRASTE · P1 · 72 achados, 7 combinações
+   ---------------------------------------------------------------------
+   Só troca de tom a superfície que CARREGA TEXTO. Onde o rosa é
+   puramente gráfico (traços da sobrancelha, ícone de passo, marcador
+   de opção) ele fica #FF2362 — dá 3,70:1 sobre branco, e o mínimo para
+   elemento gráfico é 3:1.
+   ===================================================================== */
 
-/* --------------------------------------------------------------- */
-/*  4. CATALOGO  -  (vazio por enquanto)                             */
-/* --------------------------------------------------------------- */
+html #wng-ds .ds-hero-cta,
+html #wng-ds .ds-plan-btn.solid,
+html #wng-ds .ds-cta-bottom-btn,
+html #wng-ds .ds-plan-badge,
+html #wng-ds .ds-marquee,
+html #wng-bc .bc-btn.solid,
+html #wng-footer .wng-newsletter-form button,
+html #wng-footer .wng-badge-new,
+html #wng-cookie-banner button{
+  background: var(--wng-pink-superficie);
+}
+
+html #wng-ds .ds-hero-cta:hover,
+html #wng-ds .ds-plan-btn.solid:hover,
+html #wng-ds .ds-cta-bottom-btn:hover,
+html #wng-bc .bc-btn.solid:hover,
+html #wng-footer .wng-newsletter-form button:hover,
+html #wng-footer .wng-col-brand .wng-socials a:hover,
+html #wng-cookie-banner button:hover{
+  background: var(--wng-pink-fundo-hover);
+}
+
+/* a faixa rolante tinha o texto a 70% de opacidade sobre rosa */
+html #wng-ds .ds-marquee-item{ color:#fff; }
+
+/* rosa como TEXTO sobre o azul-marinho */
+html #wng-ds .ds-eyebrow,
+html #wng-ds .ds-hero-title .pink,
+html #wng-ds .ds-plan.featured .ds-plan-vat,
+html #wng-ds .ds-plan.featured .ds-plan-label{
+  color: var(--wng-pink-sobre-navy);
+}
+
+/* cinza-azulado como TEXTO sobre o azul-marinho */
+html #wng-footer .wng-badge,
+html #wng-footer .wng-col-brand .wng-brand-detail,
+html #wng-footer .wng-col-list li a,
+html #wng-footer .wng-legal-info,
+html #wng-footer .wng-legal-links a,
+html #wng-footer .wng-bottom-left,
+html #wng-footer .wng-bottom-right a{
+  color: var(--wng-cinza-navy);
+}
+
+
+/* =====================================================================
+   3. TIPOGRAFIA · P1 · 22 regras abaixo de 12px, 3 delas a 9px
+   ---------------------------------------------------------------------
+   Piso por papel do texto:
+     rótulo/selo, lido de relance  → 12px
+     texto corrido, lido de fato   → 15px
+   Os 9px estavam nos selos dos planos, onde a compra é decidida.
+   ===================================================================== */
+
+/* selos e rótulos: 9px e 10px → 12px */
+html #wng-ds .ds-plan-badge,
+html #wng-ds .ds-plan-label,
+html #wng-ds .ds-plan-tag,
+html #wng-ds .ds-plan-vat,
+html #wng-footer .wng-badge,
+html #wng-bc .bc-fn,
+html #wng-bc .bc-pn,
+html #wng-bc .bc-lbl,
+html #wng-bc .bc-cl,
+html #wng-bc .bc-pt,
+html #wng-bc .bc-pvt,
+html #wng-bc .bc-td{
+  font-size: 12px;
+  letter-spacing: .08em;
+}
+
+/* links e notas de rodapé: 10px → 13px */
+html #wng-footer .wng-bottom-left,
+html #wng-footer .wng-bottom-right a,
+html #wng-footer .wng-legal-links a,
+html #wng-footer .wng-legal-info{
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* texto que é lido de verdade: 10px e 11px → 15px */
+html #wng-ds .ds-extra-desc,
+html #wng-ds .ds-step-desc,
+html #wng-ds .ds-included-item,
+html #wng-bc .bc-note p,
+html #wng-bc .bc-tier-desc{
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+html #wng-bc .bc-btn,
+html #wng-bc .bc-inp{ font-size: 15px; }
+
+html #wng-ds .ds-marquee-item{ font-size: 13px; }
+
+/* sobrancelha: espaçamento vira em `em`, para acompanhar o tamanho */
+html #wng-ds .ds-eyebrow,
+html #wng-bc .bc-ey{
+  font-size: 13px;
+  letter-spacing: .28em;
+}
+
+
+/* =====================================================================
+   4. RESPONSIVO · P0 · a página quebrada no celular
+   ---------------------------------------------------------------------
+   A CAUSA, medida:
+     #wng-ds .ds-hero-title { font-size: clamp(48px, 9vw, 100px) }
+
+   Em 390px de largura 9vw dá 35px — mas o clamp tem MÍNIMA de 48px.
+   Então o título renderiza a 48px, e "YOUR BUSINESS." a 48px em peso
+   900 não cabe em 390px. Daí o corte no meio da palavra.
+   O mesmo em .ds-section-title, com mínima de 32px.
+
+   E o espaçamento negativo era em px absolutos: -3px num título de
+   100px é -0,03em; num de 48px vira -0,0625em, abaixo do piso de
+   -0,04em. Passa a ser em `em`, que acompanha o tamanho.
+   ===================================================================== */
+
+html #wng-ds .ds-hero-title{
+  font-size: clamp(30px, 8.5vw, 100px);
+  letter-spacing: -0.03em;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
+
+html #wng-ds .ds-section-title{
+  font-size: clamp(26px, 6vw, 56px);
+  letter-spacing: -0.025em;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
+
+/* O contorno do "ONLINE." usa traço de 2px. Num título de 30px isso
+   engorda a letra e fecha o buraco das vogais. */
+@media (max-width: 600px){
+  html #wng-ds .ds-hero-title .outline{ -webkit-text-stroke-width: 1px; }
+}
+
+/* Rede de segurança: nada empurra a largura da janela. */
+html, body{ overflow-x: hidden; }
+html #wng-ds,
+html #wng-bc,
+html #wng-footer{ max-width: 100%; }
+
+/* Título do WordPress com "ajuste de texto": nowrap não sobrevive ao
+   celular. */
+@media (max-width: 782px){
+  html .has-fit-text{ white-space: normal; }
+}
+
+
+/* =====================================================================
+   5. ALVOS DE TOQUE · P1
+   ---------------------------------------------------------------------
+   WCAG 2.5.8 pede 24px; a regra 4 do método Sites JM pede 44px.
+   Vale o mais exigente.
+   ===================================================================== */
+
+html #wng-footer .wng-col-brand .wng-socials a{
+  width: 44px;
+  height: 44px;
+}
+
+/* O marcador tem 17px, mas quem se clica é a linha inteira. Em vez de
+   inchar a bolinha, o alvo passa a ser a linha. */
+html #wng-bc .bc-to{
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+html .wp-block-navigation__responsive-container-open{
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- medidos em emulação real de iPhone, 390x844 --------------------
+   Todos abaixo de 44px. Os números são o que o navegador reportou. */
+
+/* banner de cookies: DECLINE 96x32 · ACCEPT 89x32 */
+html #wng-cookie-banner button,
+html .wng-cookie-decline{
+  min-height: 44px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* carrinho e conta no cabeçalho: 40x40 cada */
+html .wc-block-mini-cart__button,
+html .wp-block-woocommerce-customer-account a{
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* logo do cabeçalho: 120x30 */
+html .custom-logo-link,
+html .wp-block-site-logo a{
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Links de texto do rodapé: 278x20 e 278x22.
+   Aqui vale o mínimo da WCAG 2.5.8 (24px), não os 44px de botão —
+   subir cada link de lista para 44px dobraria a altura do rodapé sem
+   ganho real. 12px de altura extra resolve e mantém o ritmo. */
+html #wng-footer .wng-col-list li a,
+html #wng-footer .wng-legal-links a,
+html #wng-footer .wng-bottom-right a{
+  display: inline-block;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+/* Ficam de fora, e é regra da própria WCAG 2.5.8: link dentro de uma
+   frase corrida é EXCEÇÃO ao tamanho mínimo. É o caso de "Cookie
+   Policy" e "Privacy Policy" no meio do texto do banner. Inflá-los
+   quebraria a entrelinha do parágrafo sem ganho nenhum. */
+
+
+/* =====================================================================
+   6. MOVIMENTO · P2 · animações que nunca param
+   ---------------------------------------------------------------------
+   A faixa rolante é elemento de design legítimo, e movimento constante
+   pede curva linear — está certa como foi feita. O problema é não
+   obedecer a quem pediu menos movimento.
+
+   Aqui não se mata o movimento: quem pede redução vê a faixa PARADA,
+   com o conteúdo legível, em vez de não ver nada.
+   ===================================================================== */
+
+@media (prefers-reduced-motion: reduce){
+  html #wng-ds .ds-marquee-track{
+    animation: none;
+    transform: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 0;
+  }
+  html #wng-ds .ds-marquee{
+    white-space: normal;
+    padding: 12px 16px;
+  }
+  html .brand-wrapper .glint{ animation: none; opacity: 0; }
+}
+
+/* Hover só onde existe ponteiro. No toque o hover "gruda" depois do
+   tap e o botão fica com a cor de hover presa. */
+@media (hover: none){
+  html #wng-ds .ds-hero-cta:hover,
+  html #wng-ds .ds-plan-btn.solid:hover,
+  html #wng-ds .ds-cta-bottom-btn:hover,
+  html #wng-bc .bc-btn.solid:hover,
+  html #wng-footer .wng-newsletter-form button:hover{
+    background: var(--wng-pink-superficie);
+  }
+}
+
+
+/* =====================================================================
+   7. SUPERFÍCIES DO NAVEGADOR
+   ---------------------------------------------------------------------
+   Seleção de texto e anel de foco vêm com o padrão do navegador, que
+   não pertence a design system nenhum. Três regras, e é o sinal mais
+   barato de que a página foi construída e não montada.
+   ===================================================================== */
+
+::selection{
+  background: var(--wng-pink-superficie);
+  color: #fff;
+}
+
+html :focus-visible{
+  outline: 3px solid var(--wng-pink-sobre-navy);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Sobre o azul-marinho o anel rosa some; ali ele é branco. */
+html #wng-ds .ds-hero :focus-visible,
+html #wng-footer :focus-visible,
+html #wng-ds .ds-plan.featured :focus-visible{
+  outline-color: #fff;
+}
