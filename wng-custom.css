@@ -196,9 +196,19 @@ html #wng-ds .ds-section-title{
 
 /* Rede de segurança: nada empurra a largura da janela. */
 html, body{ overflow-x: hidden; }
-html #wng-ds,
-html #wng-bc,
-html #wng-footer{ max-width: 100%; }
+
+/* ⚠️ AQUI TINHA UM ERRO MEU, corrigido em 28/08/2026.
+   Eu havia posto `max-width: 100%` em #wng-ds, #wng-bc e #wng-footer como
+   rede de segurança contra estouro horizontal.
+
+   Quebrou o rodapé: ele vive dentro de uma `.wp-block-column` de 1100px e
+   escapa dela por largura total. Com `max-width: 100%` ele passou a obedecer
+   a coluna — e ficou cortado ao meio numa tela de 1920px.
+
+   Medido: com a regra, 1100px. Sem ela, 1896px, como deve ser.
+
+   A rede de segurança de verdade é o `overflow-x: hidden` acima. Esta regra
+   era redundante e destrutiva. */
 
 /* Título do WordPress com "ajuste de texto": nowrap não sobrevive ao
    celular. */
@@ -346,4 +356,28 @@ html #wng-ds .ds-hero :focus-visible,
 html #wng-footer :focus-visible,
 html #wng-ds .ds-plan.featured :focus-visible{
   outline-color: #fff;
+}
+
+
+/* =====================================================================
+   8. O VAZIO DE 75px NO TOPO DE TODA PÁGINA
+   ---------------------------------------------------------------------
+   O tema traz:
+
+     body.hostinger-ai-builder-elementor,
+     body.hostinger-ai-builder-gutenberg { padding-top: 75px }
+
+   Esses 75px existem para abrir espaço à barra do editor do construtor da
+   Hostinger. No site publicado a barra não existe — o visitante vê 75px de
+   branco no topo de TODA página, e o cabeçalho começa deslocado.
+
+   Medido: `body { padding-top: 75px }`, conteúdo começando em y=75.
+
+   ⚠️ Se um dia o cliente reclamar que "sumiu o espaço da barra" ao editar,
+   é esta regra. Basta comentá-la enquanto edita.
+   ===================================================================== */
+
+html body.hostinger-ai-builder-elementor,
+html body.hostinger-ai-builder-gutenberg{
+  padding-top: 0;
 }

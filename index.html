@@ -285,11 +285,26 @@ var wcpayAssets = {"url":"/wp-content/plugins/woocommerce-payments/dist/"};
    container com .wng-cab. Sem isso ela fica escondida e não atrapalha. */
 .wng-faixa{display:none}
 .wng-cab{position:relative}
+
+/* ⚠️ A faixa é o símbolo em largura total. O símbolo tem proporção 4:1,
+   então numa tela de 1900px ele fica com ~414px de altura — seis vezes a
+   altura do cabeçalho, e transbordava para cima e para baixo.
+
+   O conserto NÃO é `overflow:hidden` no cabeçalho: ali dentro moram o
+   menu do celular e a gaveta do carrinho, e um dia alguém põe um
+   submenu que seria cortado.
+
+   Em vez disso a própria faixa vira a moldura: ocupa exatamente a altura
+   do cabeçalho, esconde o que sobra, e centraliza o símbolo dentro dela.
+   O que aparece é uma fatia horizontal do desenho — que é justamente o
+   efeito de faixa de vinil atravessando. */
 .wng-cab>.wng-faixa{
-  display:block;position:absolute;left:6%;right:6%;top:50%;
-  translate:0 -50%;z-index:0;pointer-events:none;opacity:0;
+  display:flex;align-items:center;
+  position:absolute;left:6%;right:6%;top:0;bottom:0;
+  overflow:hidden;
+  z-index:0;pointer-events:none;opacity:0;
 }
-.wng-cab>.wng-faixa svg{width:100%;height:auto;display:block}
+.wng-cab>.wng-faixa svg{width:100%;height:auto;display:block;flex:0 0 auto}
 /* o menu fica por cima da faixa */
 .wng-cab>.wp-block-template-part{position:relative;z-index:2}
 
@@ -393,6 +408,7 @@ var wcpayAssets = {"url":"/wp-content/plugins/woocommerce-payments/dist/"};
   } catch (e) { /* sem animação; o logo continua visível */ }
 })();
 </script>
+
 
 
 
