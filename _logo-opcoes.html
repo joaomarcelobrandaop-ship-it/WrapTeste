@@ -2,25 +2,27 @@
 <html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Wrap N Glass — três opções de animação no cabeçalho</title>
+<title>Wrap N Glass — animação do cabeçalho</title>
 <style>
 :root{
   --navy:#002046; --pink:#FF2362; --pink-txt:#e90043;
   --papel:#EEF0F4; --linha:#D8DDE5; --cinza:#6B7280;
   --curva:cubic-bezier(.23,1,.32,1);
+  --curva-orig:ease-in-out;          /* a curva do código original */
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--papel);color:var(--navy);
   font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:34px 22px 90px}
 .folha{max-width:1080px;margin:0 auto}
 h1{font-size:25px;letter-spacing:-.02em;margin:0 0 6px}
-.intro{color:var(--cinza);margin:0 0 34px;max-width:64ch}
+.intro{color:var(--cinza);margin:0 0 34px;max-width:66ch}
 .opcao{margin:0 0 42px}
 .cab{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
 .cab h2{font-size:18px;margin:0;letter-spacing:-.01em}
 .tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
   background:var(--navy);color:#fff;padding:3px 8px;border-radius:3px}
-.porque{color:var(--cinza);margin:0 0 14px;max-width:72ch;font-size:14px}
+.tag.ref{background:var(--cinza)}
+.porque{color:var(--cinza);margin:0 0 14px;max-width:74ch;font-size:14px}
 .btn{font:600 13px/1 system-ui,sans-serif;background:var(--navy);color:#fff;border:0;
   padding:11px 16px;border-radius:5px;cursor:pointer;min-height:44px}
 .btn:hover{background:#00305f}
@@ -28,124 +30,144 @@ h1{font-size:25px;letter-spacing:-.02em;margin:0 0 6px}
 .ficha{font-size:12.5px;color:var(--cinza);margin-top:10px;font-variant-numeric:tabular-nums}
 .ficha b{color:var(--navy)}
 
-/* ---------------- o cabeçalho simulado ---------------- */
+/* ---------------- cabeçalho simulado ---------------- */
 .hdr{position:relative;background:#fff;border:1px solid var(--linha);border-radius:8px;
   height:86px;display:flex;align-items:center;justify-content:space-between;
   padding:0 24px;overflow:hidden}
 .hdr .esq{display:flex;align-items:center;gap:10px;position:relative;z-index:2}
-.slot{width:104px;flex:0 0 auto}
+.slot{width:104px;flex:0 0 auto;position:relative;display:block}
 .slot svg{width:100%;height:auto;display:block}
 .nome{display:flex;align-items:baseline;font-weight:800;font-size:21px;letter-spacing:-.01em}
 .nome .n1{color:var(--navy)} .nome .n2{color:var(--pink);margin:0 4px}
 .nav{display:flex;gap:22px;font-size:14px;color:var(--navy);position:relative;z-index:2}
 .nav span{opacity:.85}
 
-/* a camada larga que atravessa o cabeçalho */
-.faixa{position:absolute;left:24px;right:24px;top:50%;translate:0 -50%;
-  z-index:1;pointer-events:none}
+.faixa{position:absolute;left:24px;right:24px;top:50%;translate:0 -50%;z-index:1;pointer-events:none;opacity:0}
 .faixa svg{width:100%;height:auto;display:block}
 
-/* estado parado: tudo pronto e visível */
-.path-draw{fill-opacity:1;stroke-opacity:0}
-.faixa{opacity:0}
+/* brilho do código original */
+.glint{position:absolute;inset:0 auto 0 0;width:38px;opacity:0;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(0,32,70,.28),transparent)}
 
-/* ============ A · ASSINATURA — desenha largo e recolhe ============ */
+/* estado parado: tudo pronto */
+.path-draw{fill-opacity:1;stroke-opacity:0}
+
+/* =====================================================================
+   A ANIMAÇÃO ORIGINAL DO LOGO PEQUENO
+   Mesma sequência do bloco que está no site: cada traço se desenha em
+   1,5 s com escalonamento de 0,3 s, depois preenche; o nome sobe em
+   1,6 s; o brilho passa em 2,5 s.
+   Único ajuste: pathLength="1" no lugar de stroke-dasharray:1000, para
+   os quatro traços desenharem no mesmo ritmo. No original eles tinham
+   comprimentos diferentes e desenhavam em velocidades diferentes.
+   ===================================================================== */
+.roda .slot .path-draw{
+  fill-opacity:0;stroke-width:1;stroke-dasharray:1;stroke-dashoffset:1;
+  animation:origDesenha 1500ms var(--curva-orig) forwards;
+}
+.roda .slot .p1{stroke:var(--navy);animation-delay:100ms}
+.roda .slot .p2{stroke:var(--pink);animation-delay:400ms}
+.roda .slot .p3{stroke:var(--navy);animation-delay:700ms}
+.roda .slot .p4{stroke:var(--pink);animation-delay:1000ms}
+.roda .nome{opacity:0;translate:0 5px;animation:origSobe 500ms ease-out 1600ms forwards}
+.roda .glint{animation:origBrilho 1600ms linear 2500ms 1 forwards}
+
+@keyframes origDesenha{
+  0%  {stroke-dashoffset:1;fill-opacity:0;stroke-opacity:1}
+  50% {stroke-dashoffset:0;fill-opacity:0;stroke-opacity:1}
+  100%{stroke-dashoffset:0;fill-opacity:1;stroke-opacity:0}
+}
+@keyframes origSobe{ to{opacity:1;translate:0 0} }
+@keyframes origBrilho{
+  0%  {opacity:1;transform:translateX(-60px)}
+  55% {opacity:1;transform:translateX(190px)}
+  100%{opacity:0;transform:translateX(190px)}
+}
+
+/* ============ A2 · ASSINATURA + original ============ */
 .oA.roda .faixa{opacity:1}
 .oA.roda .faixa .path-draw{
   fill-opacity:0;stroke-width:.6;stroke-dasharray:1;stroke-dashoffset:1;
-  animation:desenha 700ms var(--curva) forwards;
+  animation:largoDesenha 700ms var(--curva) forwards;
 }
 .oA.roda .faixa .p1{stroke:var(--navy);animation-delay:0ms}
 .oA.roda .faixa .p2{stroke:var(--pink);animation-delay:90ms}
 .oA.roda .faixa .p3{stroke:var(--navy);animation-delay:180ms}
 .oA.roda .faixa .p4{stroke:var(--pink);animation-delay:270ms}
-/* depois de desenhado, encolhe até o lugar do logo */
 .oA.roda .faixa{animation:recolhe 620ms var(--curva) 1000ms forwards}
-.oA.roda .slot{opacity:0;animation:apareceInstantaneo 1ms linear 1600ms forwards}
-.oA.roda .nome{opacity:0;translate:0 5px;animation:sobe 340ms var(--curva) 1560ms forwards}
-@keyframes recolhe{ to{ transform:scale(var(--fator,.1)); transform-origin:left center; opacity:0 } }
-@keyframes apareceInstantaneo{ to{ opacity:1 } }
+/* a original começa quando a faixa termina de recolher */
+.oA.roda .slot .p1{animation-delay:1500ms}
+.oA.roda .slot .p2{animation-delay:1800ms}
+.oA.roda .slot .p3{animation-delay:2100ms}
+.oA.roda .slot .p4{animation-delay:2400ms}
+.oA.roda .nome{animation-delay:3000ms}
+.oA.roda .glint{animation-delay:3900ms}
+@keyframes recolhe{ to{transform:scale(var(--fator,.1));transform-origin:left center;opacity:0} }
 
-/* ============ B · RASTRO DE VINIL — o traço fica e some ============ */
-.oB.roda .faixa{opacity:.16}
+/* ============ B2 · RASTRO DE VINIL + original ============ */
+.oB.roda .faixa{opacity:.15}
 .oB.roda .faixa .path-draw{
   fill-opacity:0;stroke-width:.8;stroke-dasharray:1;stroke-dashoffset:1;
-  animation:desenhaEPreenche 820ms var(--curva) forwards;
+  animation:largoPreenche 820ms var(--curva) forwards;
 }
 .oB.roda .faixa .p1{stroke:var(--navy);animation-delay:0ms}
 .oB.roda .faixa .p2{stroke:var(--pink);animation-delay:70ms}
 .oB.roda .faixa .p3{stroke:var(--navy);animation-delay:140ms}
 .oB.roda .faixa .p4{stroke:var(--pink);animation-delay:210ms}
 .oB.roda .faixa{animation:some 520ms var(--curva) 1050ms forwards}
-.oB.roda .slot .path-draw{fill-opacity:0;animation:preenche 420ms var(--curva) 900ms forwards}
-.oB.roda .nome{opacity:0;translate:0 5px;animation:sobe 340ms var(--curva) 1150ms forwards}
-@keyframes some{ to{opacity:0} }
-@keyframes preenche{ to{fill-opacity:1} }
-
-/* ============ C · VARREDURA — máscara revela o cabeçalho ============ */
-.oC.roda{
-  -webkit-mask-image:linear-gradient(to right,#000 0,#000 var(--corte,0%),transparent calc(var(--corte,0%) + 9%),transparent 100%);
-  mask-image:linear-gradient(to right,#000 0,#000 var(--corte,0%),transparent calc(var(--corte,0%) + 9%),transparent 100%);
-  animation:varre 1000ms var(--curva) forwards;
-}
-.oC.roda .faixa{opacity:1}
-.oC.roda .faixa .path-draw{
-  fill-opacity:0;stroke-width:.7;stroke-dasharray:1;stroke-dashoffset:1;
-  animation:desenha 900ms linear forwards;
-}
-.oC.roda .faixa .p1,.oC.roda .faixa .p3{stroke:var(--navy)}
-.oC.roda .faixa .p2,.oC.roda .faixa .p4{stroke:var(--pink)}
-.oC.roda .faixa{animation:some 400ms var(--curva) 980ms forwards}
-@property --corte{syntax:'<percentage>';inherits:false;initial-value:0%}
-@keyframes varre{ from{--corte:0%} to{--corte:104%} }
+/* a original roda POR BAIXO da faixa, ao mesmo tempo */
+.oB.roda .slot .p1{animation-delay:250ms}
+.oB.roda .slot .p2{animation-delay:550ms}
+.oB.roda .slot .p3{animation-delay:850ms}
+.oB.roda .slot .p4{animation-delay:1150ms}
+.oB.roda .nome{animation-delay:1750ms}
+.oB.roda .glint{animation-delay:2650ms}
 
 /* ---------------- passos compartilhados ---------------- */
-@keyframes desenha{
+@keyframes largoDesenha{
   0%{stroke-dashoffset:1;fill-opacity:0;stroke-opacity:1}
   70%{stroke-dashoffset:0;fill-opacity:0;stroke-opacity:1}
   100%{stroke-dashoffset:0;fill-opacity:0;stroke-opacity:1}
 }
-@keyframes desenhaEPreenche{
+@keyframes largoPreenche{
   0%{stroke-dashoffset:1;fill-opacity:0;stroke-opacity:1}
   62%{stroke-dashoffset:0;fill-opacity:0;stroke-opacity:1}
   100%{stroke-dashoffset:0;fill-opacity:1;stroke-opacity:0}
 }
-@keyframes sobe{ to{opacity:1;translate:0 0} }
+@keyframes some{ to{opacity:0} }
 
-/* ---------------- quem pediu menos movimento ---------------- */
+/* ---------------- menos movimento ---------------- */
 @media (prefers-reduced-motion:reduce){
   .opcao .hdr *{animation:none!important}
-  .opcao .faixa{opacity:0!important}
-  .opcao .slot,.opcao .nome{opacity:1!important;translate:0!important}
-  .oC.roda{-webkit-mask-image:none;mask-image:none;animation:none}
+  .opcao .faixa,.opcao .glint{opacity:0!important}
+  .opcao .slot .path-draw{fill-opacity:1!important;stroke-opacity:0!important}
+  .opcao .nome{opacity:1!important;translate:0!important}
   .aviso-rm{display:block}
 }
 .aviso-rm{display:none;background:#FFF4E5;border:1px solid #F0D9B5;padding:12px 14px;
   border-radius:6px;font-size:13.5px;margin-bottom:26px}
 
-/* modo compacto: só os três cabeçalhos, para gravar o GIF */
+/* modo compacto, para gravar */
 body.compacto{padding:14px}
-body.compacto h1,body.compacto .intro,body.compacto .porque,
-body.compacto .ficha,body.compacto .btn,body.compacto .btn:root{display:none}
+body.compacto h1,body.compacto p{display:none}
 body.compacto .opcao{margin:0 0 12px}
 body.compacto .cab{margin-bottom:6px}
-body.compacto p{display:none}
 </style></head><body>
 <div class="folha">
 
-<h1>Três opções de animação no cabeçalho</h1>
-<p class="intro">Nenhuma está no site. São protótipos para você escolher.
-Todas em HTML, CSS e JavaScript puros — nada de biblioteca —, todas respeitam
-<code>prefers-reduced-motion</code>, e todas cabem no mesmo bloco de HTML
-personalizado que o logo já ocupa hoje.</p>
+<h1>Animação do cabeçalho — com a original preservada</h1>
+<p class="intro">As duas opções agora <b>incluem a animação original do logo</b>,
+a mesma que está no site hoje: cada traço se desenhando, o nome subindo e o
+brilho passando. A primeira linha é a original sozinha, para comparar.
+Tudo em HTML, CSS e JavaScript puros.</p>
 
 <div class="aviso-rm"><b>Seu sistema está com "reduzir movimento" ligado.</b>
-As animações estão desativadas de propósito — é assim que a pessoa com essa
-preferência vai ver: o cabeçalho pronto, na hora.</div>
+As animações estão desativadas de propósito — é assim que quem tem essa
+preferência vai ver.</div>
 
 <div id="lista"></div>
-
 </div>
+
 <script>
 var SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" role="img" aria-label="Wrap N Glass">'
 +'<path class="path-draw p1" pathLength="1" fill="#002046" d="M7.68,66a1.68,1.68,0,0,1-1.55-3q5.37-3.28,11.21-6.44a260.73,260.73,0,0,1,88.43-28.75,1.67,1.67,0,0,1,1.5.57Q130.13,54.57,153,80.78a1.63,1.63,0,0,0,1.37.57c9.88-.66,20.21-1,30.95-1A460.49,460.49,0,0,1,243.51,84a1.69,1.69,0,0,1-.25,3.36H243c-14.57-.17-36.41-.33-63.73,4.09-11.06,1.79-20.16,3.87-26.49,5.46a1.69,1.69,0,0,1-1.7-.55l-48-56.76a1.7,1.7,0,0,0-1.54-.58c-10.41,1.55-21.39,3.63-32.84,6.4A373.86,373.86,0,0,0,7.68,66Z"/>'
@@ -155,24 +177,24 @@ var SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" role="i
 +'</svg>';
 
 var OPCOES = [
- {id:'oA', tag:'A', nome:'Assinatura',
-  porque:'O traço se desenha na largura inteira do cabeçalho, como uma assinatura, e depois recolhe até o lugar do logo. É a leitura mais literal do que você pediu: a animação acontece no cabeçalho todo, e só no fim vira o logo pequeno.',
-  ficha:'desenho 700&nbsp;ms · recolhimento 620&nbsp;ms · total <b>1,94&nbsp;s</b>'},
- {id:'oB', tag:'B', nome:'Rastro de vinil',
-  porque:'O traço atravessa o cabeçalho em marca-d\'água, se preenche e some — enquanto o logo pequeno se preenche no lugar dele. É o produto do cliente virando animação: uma faixa de vinil aplicada da esquerda para a direita. Mais discreta que a A, e a que eu escolheria.',
-  ficha:'desenho 820&nbsp;ms · saída 520&nbsp;ms · total <b>1,57&nbsp;s</b>'},
- {id:'oC', tag:'C', nome:'Varredura',
-  porque:'Uma máscara de gradiente revela o cabeçalho inteiro da esquerda para a direita — logo, nome e menu juntos — com o traço correndo à frente como quem puxa a cortina. A mais cinematográfica, e a única em que o menu também entra na animação.',
-  ficha:'varredura 1000&nbsp;ms · saída do traço 400&nbsp;ms · total <b>1,38&nbsp;s</b>'}
+ {id:'oO', tag:'Referência', ref:true, nome:'A original, sozinha',
+  porque:'Exatamente o que está no site hoje: os quatro traços se desenhando em sequência, o nome subindo e o brilho passando. Está aqui só para você comparar o antes.',
+  ficha:'traços 1,5&nbsp;s com escalonamento de 0,3&nbsp;s · nome em 1,6&nbsp;s · brilho em 2,5&nbsp;s · total <b>4,1&nbsp;s</b>'},
+ {id:'oA', tag:'A', nome:'Assinatura + original',
+  porque:'A faixa larga se desenha no cabeçalho inteiro e recolhe até o lugar do logo. Só então a animação original começa. As duas em sequência, uma depois da outra — nada se atropela, mas fica longo.',
+  ficha:'faixa 700&nbsp;ms + recolhimento 620&nbsp;ms, depois a original inteira · total <b>5,5&nbsp;s</b>'},
+ {id:'oB', tag:'B', nome:'Rastro de vinil + original',
+  porque:'A faixa larga atravessa em marca-d\'água enquanto a animação original acontece por baixo, ao mesmo tempo. A faixa some, a original termina, o nome sobe, o brilho passa. As duas se sobrepõem em vez de se enfileirar — por isso cabe em menos tempo.',
+  ficha:'faixa 820&nbsp;ms sobreposta à original · total <b>4,3&nbsp;s</b>'}
 ];
 
 document.getElementById('lista').innerHTML = OPCOES.map(function(o){
   return '<section class="opcao">'
-   + '<div class="cab"><span class="tag">Opção ' + o.tag + '</span><h2>' + o.nome + '</h2></div>'
+   + '<div class="cab"><span class="tag' + (o.ref?' ref':'') + '">' + (o.ref?o.tag:'Opção '+o.tag) + '</span><h2>' + o.nome + '</h2></div>'
    + '<p class="porque">' + o.porque + '</p>'
    + '<div class="hdr ' + o.id + '" id="h_' + o.id + '">'
    +   '<div class="faixa">' + SVG + '</div>'
-   +   '<div class="esq"><span class="slot">' + SVG + '</span>'
+   +   '<div class="esq"><span class="slot">' + SVG + '<span class="glint"></span></span>'
    +     '<span class="nome"><span class="n1">WRAP</span><span class="n2">N</span><span class="n1">GLASS</span></span>'
    +   '</div>'
    +   '<nav class="nav"><span>Shop</span><span>Services</span><span>Digital Solutions</span></nav>'
@@ -183,52 +205,40 @@ document.getElementById('lista').innerHTML = OPCOES.map(function(o){
 }).join('');
 
 function calcularFator(hdr){
-  // quanto a faixa larga precisa encolher para caber no lugar do logo
   var faixa = hdr.querySelector('.faixa'), slot = hdr.querySelector('.slot');
   if(!faixa || !slot) return;
   var f = slot.getBoundingClientRect().width / faixa.getBoundingClientRect().width;
   hdr.style.setProperty('--fator', f.toFixed(4));
 }
-
 function tocar(hdr){
   calcularFator(hdr);
   hdr.classList.remove('roda');
-  void hdr.offsetWidth;          // reinicia as animações
+  void hdr.offsetWidth;
   hdr.classList.add('roda');
 }
-
 document.addEventListener('click', function(e){
   var b = e.target.closest('.btn');
   if(b) tocar(document.getElementById(b.dataset.alvo));
 });
+addEventListener('resize', function(){ document.querySelectorAll('.hdr').forEach(calcularFator); });
 
-addEventListener('resize', function(){
-  document.querySelectorAll('.hdr').forEach(calcularFator);
-});
-
-// ?f=350  congela as três no mesmo instante, para comparar lado a lado
-// &compacto  esconde os textos, deixando só os cabeçalhos (para gravar)
 var params = new URLSearchParams(location.search);
 var congelar = params.get('f');
 if (params.has('compacto')) document.body.classList.add('compacto');
 
 addEventListener('load', function(){
   if (congelar !== null) {
-    var ms = parseInt(congelar, 10) || 0;
+    var ms = parseInt(congelar,10) || 0;
     document.querySelectorAll('.hdr').forEach(tocar);
-    document.querySelectorAll('.ficha').forEach(function(p){
-      p.insertAdjacentHTML('beforeend', ' — <b>congelado em ' + ms + ' ms</b>');
-    });
     setTimeout(function(){
       document.getAnimations().forEach(function(a){
-        try { a.pause(); a.currentTime = ms; } catch(e){}
+        try{ a.pause(); a.currentTime = ms; }catch(e){}
       });
     }, 120);
     return;
   }
-  // toca as três em sequência, para dar tempo de ver cada uma
   OPCOES.forEach(function(o,i){
-    setTimeout(function(){ tocar(document.getElementById('h_'+o.id)); }, 300 + i*2300);
+    setTimeout(function(){ tocar(document.getElementById('h_'+o.id)); }, 300 + i*5800);
   });
 });
 </script>

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>captura</title>
+<style>
+/* Folha de contato: N cópias do mesmo cabeçalho, cada uma congelada num
+   instante diferente. Uma captura só vira N quadros de GIF depois de
+   fatiada. Cada linha tem exatamente 86px, sem margem, para o corte
+   bater certo. */
+:root{--navy:#002046;--pink:#FF2362;--curva:cubic-bezier(.23,1,.32,1);--curva-orig:ease-in-out}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#fff}
+body{font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--navy)}
+.hdr{position:relative;background:#fff;height:86px;display:flex;align-items:center;
+  justify-content:space-between;padding:0 24px;overflow:hidden;
+  border-bottom:1px solid #E8EBF0}
+.hdr .esq{display:flex;align-items:center;gap:10px;position:relative;z-index:2}
+.slot{width:104px;flex:0 0 auto;position:relative;display:block}
+.slot svg{width:100%;height:auto;display:block}
+.nome{display:flex;align-items:baseline;font-weight:800;font-size:21px;letter-spacing:-.01em}
+.nome .n1{color:var(--navy)}.nome .n2{color:var(--pink);margin:0 4px}
+.nav{display:flex;gap:22px;font-size:14px;position:relative;z-index:2}
+.nav span{opacity:.85}
+.faixa{position:absolute;left:24px;right:24px;top:50%;translate:0 -50%;z-index:1;pointer-events:none;opacity:0}
+.faixa svg{width:100%;height:auto;display:block}
+.glint{position:absolute;inset:0 auto 0 0;width:38px;opacity:0;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(0,32,70,.28),transparent)}
+.path-draw{fill-opacity:1;stroke-opacity:0}
+
+/* --- a original --- */
+.roda .slot .path-draw{fill-opacity:0;stroke-width:1;stroke-dasharray:1;stroke-dashoffset:1;
+  animation:origDesenha 1500ms var(--curva-orig) forwards}
+.roda .slot .p1{stroke:var(--navy);animation-delay:100ms}
+.roda .slot .p2{stroke:var(--pink);animation-delay:400ms}
+.roda .slot .p3{stroke:var(--navy);animation-delay:700ms}
+.roda .slot .p4{stroke:var(--pink);animation-delay:1000ms}
+.roda .nome{opacity:0;translate:0 5px;animation:origSobe 500ms ease-out 1600ms forwards}
+.roda .glint{animation:origBrilho 1600ms linear 2500ms 1 forwards}
+@keyframes origDesenha{0%{stroke-dashoffset:1;fill-opacity:0;stroke-opacity:1}
+ 50%{stroke-dashoffset:0;fill-opacity:0;stroke-opacity:1}
+ 100%{stroke-dashoffset:0;fill-opacity:1;stroke-opacity:0}}
+@keyframes origSobe{to{opacity:1;translate:0 0}}
+@keyframes origBrilho{0%{opacity:1;transform:translateX(-60px)}
+ 55%{opacity:1;transform:translateX(190px)}100%{opacity:0;transform:translateX(190px)}}
+
+/* --- A2 --- */
+.oA.roda .faixa{opacity:1;animation:recolhe 620ms var(--curva) 1000ms forwards}
+.oA.roda .faixa .path-draw{fill-opacity:0;stroke-width:.6;stroke-dasharray:1;stroke-dashoffset:1;
+  animation:largoDesenha 700ms var(--curva) forwards}
+.oA.roda .faixa .p1{stroke:var(--navy);animation-delay:0ms}
+.oA.roda .faixa .p2{stroke:var(--pink);animation-delay:90ms}
+.oA.roda .faixa .p3{stroke:var(--navy);animation-delay:180ms}
+.oA.roda .faixa .p4{stroke:var(--pink);animation-delay:270ms}
+.oA.roda .slot .p1{animation-delay:1500ms}
+.oA.roda .slot .p2{animation-delay:1800ms}
+.oA.roda .slot .p3{animation-delay:2100ms}
+.oA.roda .slot .p4{animation-delay:2400ms}
+.oA.roda .nome{animation-delay:3000ms}
+.oA.roda .glint{animation-delay:3900ms}
+@keyframes recolhe{to{transform:scale(var(--fator,.1));transform-origin:left center;opacity:0}}
+
+/* --- B2 --- */
+.oB.roda .faixa{opacity:.15;animation:some 520ms var(--curva) 1050ms forwards}
+.oB.roda .faixa .path-draw{fill-opacity:0;stroke-width:.8;stroke-dasharray:1;stroke-dashoffset:1;
+  animation:largoPreenche 820ms var(--curva) forwards}
+.oB.roda .faixa .p1{stroke:var(--navy);animation-delay:0ms}
+.oB.roda .faixa .p2{stroke:var(--pink);animation-delay:70ms}
+.oB.roda .faixa .p3{stroke:var(--navy);animation-delay:140ms}
+.oB.roda .faixa .p4{stroke:var(--pink);animation-delay:210ms}
+.oB.roda .slot .p1{animation-delay:250ms}
+.oB.roda .slot .p2{animation-delay:550ms}
+.oB.roda .slot .p3{animation-delay:850ms}
+.oB.roda .slot .p4{animation-delay:1150ms}
+.oB.roda .nome{animation-delay:1750ms}
+.oB.roda .glint{animation-delay:2650ms}
+
+@keyframes largoDesenha{0%{stroke-dashoffset:1;fill-opacity:0;stroke-opacity:1}
+ 70%{stroke-dashoffset:0;fill-opacity:0;stroke-opacity:1}
+ 100%{stroke-dashoffset:0;fill-opacity:0;stroke-opacity:1}}
+@keyframes largoPreenche{0%{stroke-dashoffset:1;fill-opacity:0;stroke-opacity:1}
+ 62%{stroke-dashoffset:0;fill-opacity:0;stroke-opacity:1}
+ 100%{stroke-dashoffset:0;fill-opacity:1;stroke-opacity:0}}
+@keyframes some{to{opacity:0}}
+</style></head><body>
+<div id="folha"></div>
+<script>
+var SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" role="img" aria-label="Wrap N Glass">'
++'<path class="path-draw p1" pathLength="1" fill="#002046" d="M7.68,66a1.68,1.68,0,0,1-1.55-3q5.37-3.28,11.21-6.44a260.73,260.73,0,0,1,88.43-28.75,1.67,1.67,0,0,1,1.5.57Q130.13,54.57,153,80.78a1.63,1.63,0,0,0,1.37.57c9.88-.66,20.21-1,30.95-1A460.49,460.49,0,0,1,243.51,84a1.69,1.69,0,0,1-.25,3.36H243c-14.57-.17-36.41-.33-63.73,4.09-11.06,1.79-20.16,3.87-26.49,5.46a1.69,1.69,0,0,1-1.7-.55l-48-56.76a1.7,1.7,0,0,0-1.54-.58c-10.41,1.55-21.39,3.63-32.84,6.4A373.86,373.86,0,0,0,7.68,66Z"/>'
++'<path class="path-draw p2" pathLength="1" fill="#FF2362" d="M236.12,37.84l18.62,11.34a1.68,1.68,0,0,0,1,.24q10.35-.63,21.08-.87a557.26,557.26,0,0,1,111.51,8.79,1.69,1.69,0,0,0,.78-3.28l-1.44-.43C348.13,42,316.08,39.07,292.32,37,278,35.78,259.24,34.66,237,34.71A1.69,1.69,0,0,0,236.12,37.84Z"/>'
++'<path class="path-draw p3" pathLength="1" fill="#002046" d="M220.42,9Q202.6,7.77,185.56,7.6c-66.2.72-84.65,2.38-84.7,4.09-.06,2.3,33.3,2.31,76.26,20.15l2.14.9a1.69,1.69,0,0,1-.57,3.24,414.45,414.45,0,0,0-49.07,5.58,1.7,1.7,0,0,0-1,2.78l18.12,20.78a1.63,1.63,0,0,0,1.45.56,420.84,420.84,0,0,1,97-.07q8.07.94,15.87,2.17a1.69,1.69,0,0,0,1.28-3C253.13,57.9,243.07,51,232.13,44.1Q222.38,38,213,32.74a1.68,1.68,0,0,1,.66-3.14,397.3,397.3,0,0,1,93.36.34c26.82,3.32,51,9.18,71.08,14.16,2.32.57,4.58,1.15,6.8,1.72a1.69,1.69,0,0,0,1-3.24A640.1,640.1,0,0,0,220.42,9Z"/>'
++'<path class="path-draw p4" pathLength="1" fill="#FF2362" d="M101.22,47.55A414.7,414.7,0,0,0,21.15,76.38a1.69,1.69,0,0,0,.62,3.21c7.15.48,14.7,1.24,22.58,2.36q8.09,1.17,15.52,2.65a1.76,1.76,0,0,0,.82,0,480.2,480.2,0,0,1,57.59-14.38,1.7,1.7,0,0,0,1-2.75L102.92,48.1Z"/>'
++'</svg>';
+
+var q = new URLSearchParams(location.search);
+var op    = q.get('op')    || 'oB';
+var n     = parseInt(q.get('n')||'48', 10);
+var passo = parseInt(q.get('passo')||'120', 10);
+
+var html = '';
+for (var i=0;i<n;i++){
+  html += '<div class="hdr ' + op + '" data-t="' + (i*passo) + '">'
+        +  '<div class="faixa">' + SVG + '</div>'
+        +  '<div class="esq"><span class="slot">' + SVG + '<span class="glint"></span></span>'
+        +    '<span class="nome"><span class="n1">WRAP</span><span class="n2">N</span><span class="n1">GLASS</span></span></div>'
+        +  '<nav class="nav"><span>Shop</span><span>Services</span><span>Digital Solutions</span></nav>'
+        + '</div>';
+}
+document.getElementById('folha').innerHTML = html;
+
+addEventListener('load', function(){
+  var linhas = [].slice.call(document.querySelectorAll('.hdr'));
+  linhas.forEach(function(l){
+    var faixa = l.querySelector('.faixa'), slot = l.querySelector('.slot');
+    l.style.setProperty('--fator',
+      (slot.getBoundingClientRect().width / faixa.getBoundingClientRect().width).toFixed(4));
+    l.classList.add('roda');
+  });
+  setTimeout(function(){
+    linhas.forEach(function(l){
+      var t = parseInt(l.dataset.t, 10);
+      l.getAnimations({subtree:true}).forEach(function(a){
+        try{ a.pause(); a.currentTime = t; }catch(e){}
+      });
+    });
+    document.title = 'pronto:' + linhas.length;
+  }, 250);
+});
+</script>
+</body></html>
