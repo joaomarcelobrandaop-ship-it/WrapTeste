@@ -41,8 +41,9 @@
   --wng-pink:            #FF2362;  /* rosa da marca — inalterado */
   --wng-pink-superficie: #e90043;  /* fundo rosa que carrega texto branco */
   --wng-pink-fundo-hover:#d1003c;  /* um passo mais escuro: 5,45:1 */
-  --wng-pink-sobre-navy: #ff2d69;  /* rosa como TEXTO sobre navy */
-  --wng-cinza-navy:      #7a87a3;  /* cinza-azulado como TEXTO sobre navy */
+  --wng-pink-sobre-navy: #ff336e;  /* rosa como TEXTO sobre navy — 4,60:1 */
+  --wng-pink-sobre-claro:#e00040;  /* rosa como TEXTO sobre claro — 4,94:1 */
+  --wng-cinza-navy:      #7e8aa6;  /* cinza-azulado como TEXTO sobre navy — 4,70:1 */
 }
 
 
@@ -380,4 +381,105 @@ html #wng-ds .ds-plan.featured :focus-visible{
 html body.hostinger-ai-builder-elementor,
 html body.hostinger-ai-builder-gutenberg{
   padding-top: 0;
+}
+
+
+/* =====================================================================
+   9. VARREDURA DE RUNTIME — o que sobrou depois da seção 2
+   ---------------------------------------------------------------------
+   A seção 2 corrigiu os contrastes que o detector achou. Mas o detector
+   lê o <style> embutido; ele não vê o resultado composto na tela.
+
+   Rodei uma segunda auditoria medindo no navegador, com este arquivo já
+   aplicado (`auditar.py`). Ela achou 18 combinações reprovando por
+   página. Destas, a maioria era FALSO POSITIVO: a sonda não compõe
+   transparência, então lia `rgba(255,35,98,0.03)` como fundo rosa quando
+   na prática é branco. Conferido na mão:
+     navy sobre esse fundo composto = 15,33:1  (passa folgado)
+     #4a5568 sobre o mesmo          =  7,11:1  (passa)
+
+   Sobraram três falhas de verdade, corrigidas aqui.
+   ===================================================================== */
+
+/* --- 9.1 · rosa como TEXTO sobre fundo claro -------------------------
+   #ff2362 dá 3,70:1 no branco e 3,45:1 no #f5f7fa. Ambos reprovam.
+   #e00040 dá 4,94:1 e 4,60:1 — matiz e saturação preservados. */
+html #wng-bc .bc-ey,
+html #wng-bc .bc-pt,
+html #wng-bc .bc-pvt,
+html #wng-bc .bc-tier-price,
+html #wng-ds .ds-section-title span{
+  color: var(--wng-pink-sobre-claro);
+}
+
+/* --- 9.2 · rosa como TEXTO sobre o azul-marinho ----------------------
+   Faltavam a assinatura e os links do rodapé: 4,38:1. Agora 4,60:1. */
+html #wng-footer .wng-tagline,
+html #wng-footer p a,
+html #wng-footer .wng-desc a{
+  color: var(--wng-pink-sobre-navy);
+}
+
+/* --- 9.3 · tamanhos abaixo de 12px que escaparam da seção 3 ---------
+   Todos no rodapé e no banner de cookies, que aparecem em TODA página —
+   por isso reprovavam nas 11 páginas medidas. */
+html #wng-cookie-banner button,
+html .wng-cookie-decline,
+html #wng-footer .wng-tagline,
+html #wng-footer .wng-col-title,
+html #wng-footer .wng-col-brand .wng-socials a,
+html #wng-bc .bc-tier-name{
+  font-size: 13px;
+  letter-spacing: .06em;
+}
+
+
+/* =====================================================================
+   10. FECHAMENTO — o que a segunda varredura ainda pegou
+   ---------------------------------------------------------------------
+   Três destes eram MEUS, e do mesmo tipo de descuido: eu defini fundo
+   sem garantir a cor do texto que fica em cima.
+   ===================================================================== */
+
+/* --- 10.1 · ERRO MEU: fundo rosa sem garantir o texto ----------------
+   `.wng-badge-new` tem as DUAS classes: `.wng-badge`, que eu pintei de
+   cinza-azulado, e `.wng-badge-new`, que eu pintei de rosa. Resultado:
+   cinza sobre rosa, 1,34:1 — pior do que estava antes de eu mexer.
+
+   Regra que fica: onde eu defino um fundo, defino o texto junto. */
+html #wng-ds .ds-hero-cta,
+html #wng-ds .ds-plan-btn.solid,
+html #wng-ds .ds-cta-bottom-btn,
+html #wng-ds .ds-plan-badge,
+html #wng-bc .bc-btn.solid,
+html #wng-footer .wng-newsletter-form button,
+html #wng-footer .wng-badge-new,
+html #wng-cookie-banner button{
+  color: #fff;
+}
+
+/* --- 10.2 · o texto legal do rodapé estava num <span> filho ---------
+   Eu mirei em `.wng-legal-info` na seção 3, mas o texto de 10px mora no
+   `<span>` de dentro, que tem tamanho próprio. */
+html #wng-footer .wng-legal-info,
+html #wng-footer .wng-legal-info span,
+html #wng-footer .wng-legal-bar span{
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* --- 10.3 · o botão da newsletter ficou de fora do piso de 12px ----- */
+html #wng-footer .wng-newsletter-form button{
+  font-size: 13px;
+  min-height: 44px;
+}
+
+/* --- 10.4 · o botão "Decline" do banner de cookies -------------------
+   Texto a 50% de branco sobre o azul-marinho. Recusar precisa ser tão
+   legível quanto aceitar — é a escolha que o GDPR exige oferecer em
+   igualdade. */
+html .wng-cookie-decline,
+html #wng-cookie-banner button[class*="decline"]{
+  color: #fff;
+  border-color: rgba(255,255,255,.55);
 }
