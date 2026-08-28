@@ -1,0 +1,33 @@
+/* =====================================================================
+   WRAP N GLASS - CSS de trabalho (Sites JM)
+   ---------------------------------------------------------------------
+   TUDO que a gente escrever de CSS mora AQUI, em arquivo unico.
+
+   Por que: no WordPress isso vira, sem alterar uma virgula,
+   Aparencia -> Personalizar -> CSS adicional.
+   E o CSS adicional do WordPress e injetado por ULTIMO, igual a este
+   arquivo esta injetado por ultimo no <head> do espelho.
+   Entao a cascata se comporta igual nos dois lugares.
+
+   REGRA: nunca editar o CSS do tema. So este arquivo.
+   ===================================================================== */
+
+/* --------------------------------------------------------------- */
+/*  1. TOKENS  -  as cores que ja existem no site, nomeadas          */
+/* --------------------------------------------------------------- */
+:root{
+  --wng-navy:  #002046;   /* azul do logo e dos titulos */
+  --wng-pink:  #FF2362;   /* rosa do N e dos botoes */
+}
+
+/* --------------------------------------------------------------- */
+/*  2. LOGO  -  (vazio por enquanto)                                 */
+/* --------------------------------------------------------------- */
+
+/* --------------------------------------------------------------- */
+/*  3. LAYOUT E ALINHAMENTOS  -  (vazio por enquanto)                */
+/* --------------------------------------------------------------- */
+
+/* --------------------------------------------------------------- */
+/*  4. CATALOGO  -  (vazio por enquanto)                             */
+/* --------------------------------------------------------------- */

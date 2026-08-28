@@ -1,0 +1,3 @@
+# Copia de trabalho. O site real e https://wrapnglass.com/
+User-agent: *
+Disallow: /
