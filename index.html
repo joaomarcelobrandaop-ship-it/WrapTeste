@@ -370,12 +370,18 @@ var wcpayAssets = {"url":"/wp-content/plugins/woocommerce-payments/dist/"};
     cab.classList.add('wng-cab');
     cab.insertBefore(faixa, cab.firstChild);
 
+    /* Só na home. Nas páginas internas o logo aparece pronto — foi por
+       isso que o portão de "uma vez por sessão" saiu: quem navega
+       Shop → Services → Digital Solutions já não vê animação nenhuma,
+       porque essas páginas nem entram aqui.
+
+       Sobrava proteger contra quem volta à home várias vezes na mesma
+       visita, o que é raro — e o preço era a animação ficar invisível
+       para quem recarrega a página, inclusive na hora de mostrar ao
+       cliente. Toca em toda carga da home. */
     var eHome = document.body.classList.contains('home') ||
                 location.pathname === '/' || location.pathname === '/index.html';
     if (!eHome) return;
-
-    var forcar = location.search.indexOf('logo') > -1;
-    if (!forcar && sessionStorage.getItem('wngLogoVisto')) return;
 
     /* ⚠️ ESPERAR A PÁGINA CARREGAR ANTES DE ANIMAR.
        Este script roda enquanto o HTML ainda está sendo lido. Se a
@@ -391,10 +397,7 @@ var wcpayAssets = {"url":"/wp-content/plugins/woocommerce-payments/dist/"};
        de fato começa, e não antes. */
     var ligar = function () {
       requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          try { sessionStorage.setItem('wngLogoVisto', '1'); } catch (e) {}
-          cab.classList.add('anima');
-        });
+        requestAnimationFrame(function () { cab.classList.add('anima'); });
       });
     };
     if (document.readyState === 'complete') ligar();
@@ -403,6 +406,7 @@ var wcpayAssets = {"url":"/wp-content/plugins/woocommerce-payments/dist/"};
   } catch (e) { /* sem animação; o logo continua visível */ }
 })();
 </script>
+
 
 
 
