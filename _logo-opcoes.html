@@ -122,6 +122,14 @@ h1{font-size:25px;letter-spacing:-.02em;margin:0 0 6px}
 }
 .aviso-rm{display:none;background:#FFF4E5;border:1px solid #F0D9B5;padding:12px 14px;
   border-radius:6px;font-size:13.5px;margin-bottom:26px}
+
+/* modo compacto: só os três cabeçalhos, para gravar o GIF */
+body.compacto{padding:14px}
+body.compacto h1,body.compacto .intro,body.compacto .porque,
+body.compacto .ficha,body.compacto .btn,body.compacto .btn:root{display:none}
+body.compacto .opcao{margin:0 0 12px}
+body.compacto .cab{margin-bottom:6px}
+body.compacto p{display:none}
 </style></head><body>
 <div class="folha">
 
@@ -199,7 +207,10 @@ addEventListener('resize', function(){
 });
 
 // ?f=350  congela as três no mesmo instante, para comparar lado a lado
-var congelar = new URLSearchParams(location.search).get('f');
+// &compacto  esconde os textos, deixando só os cabeçalhos (para gravar)
+var params = new URLSearchParams(location.search);
+var congelar = params.get('f');
+if (params.has('compacto')) document.body.classList.add('compacto');
 
 addEventListener('load', function(){
   if (congelar !== null) {
