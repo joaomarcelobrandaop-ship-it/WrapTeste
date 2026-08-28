@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<title>Logo — fases da animação</title>
+<style>
+  body{margin:0;background:#fff;font:14px/1.4 system-ui,sans-serif;color:#002046;padding:26px}
+  h1{font-size:17px;margin:0 0 4px}
+  p.sub{margin:0 0 26px;color:#6b7280;font-size:13px}
+  .tira{display:flex;flex-direction:column;gap:20px}
+  .fase{display:flex;align-items:center;gap:22px;border-top:1px solid #e8ebf0;padding-top:16px}
+  .rot{width:150px;flex:0 0 auto;font-size:12px;color:#6b7280}
+  .rot b{display:block;font-size:15px;color:#002046;font-variant-numeric:tabular-nums}
+  .palco{background:#f5f7fa;border-radius:6px;padding:14px 18px;flex:1}
+
+  .brand-wrapper{display:flex;align-items:center}
+  .logo-box{display:block;width:230px;flex:0 0 auto}
+  .main-svg{width:100%;height:auto;display:block}
+  .brand-name{display:flex;align-items:baseline;margin-left:10px;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    font-weight:800;font-size:30px;letter-spacing:-.01em;line-height:1}
+  .c-navy{color:#002046}.c-pink{color:#FF2362;margin:0 4px}
+
+  /* mesma animação do bloco real, congelada por atraso negativo */
+  .fase .path-draw{
+    fill-opacity:0;stroke-width:1.2;stroke-dasharray:1;stroke-dashoffset:1;
+    animation:wngDesenha 520ms cubic-bezier(.23,1,.32,1) forwards;
+    animation-play-state:paused;
+  }
+  .fase .p1{stroke:#002046}.fase .p2{stroke:#FF2362}
+  .fase .p3{stroke:#002046}.fase .p4{stroke:#FF2362}
+  .fase .brand-name{opacity:0;transform:translateY(4px);
+    animation:wngEntra 320ms cubic-bezier(.23,1,.32,1) forwards;
+    animation-play-state:paused}
+
+  /* atraso negativo = congela naquele instante. O escalonamento de
+     80ms entre os traços é o mesmo do bloco real. */
+  .t0   .p1{animation-delay:0ms}     .t0 .p2{animation-delay:0ms}
+  .t0   .p3{animation-delay:0ms}     .t0 .p4{animation-delay:0ms}
+  .t0   .brand-name{animation-delay:0ms}
+
+  .t220 .p1{animation-delay:-220ms}  .t220 .p2{animation-delay:-140ms}
+  .t220 .p3{animation-delay:-60ms}   .t220 .p4{animation-delay:20ms}
+  .t220 .brand-name{animation-delay:480ms}
+
+  .t480 .p1{animation-delay:-480ms}  .t480 .p2{animation-delay:-400ms}
+  .t480 .p3{animation-delay:-320ms}  .t480 .p4{animation-delay:-240ms}
+  .t480 .brand-name{animation-delay:220ms}
+
+  .t880 .p1{animation-delay:-880ms}  .t880 .p2{animation-delay:-800ms}
+  .t880 .p3{animation-delay:-720ms}  .t880 .p4{animation-delay:-640ms}
+  .t880 .brand-name{animation-delay:-180ms}
+
+  .t1100 .path-draw{animation-delay:-1100ms}
+  .t1100 .brand-name{animation-delay:-400ms}
+
+  @keyframes wngDesenha{
+    0%  {stroke-dashoffset:1;fill-opacity:0;stroke-opacity:1}
+    62% {stroke-dashoffset:0;fill-opacity:0;stroke-opacity:1}
+    100%{stroke-dashoffset:0;fill-opacity:1;stroke-opacity:0}
+  }
+  @keyframes wngEntra{ to{opacity:1;transform:translateY(0)} }
+</style></head><body>
+
+<h1>Animação do logo — congelada quadro a quadro</h1>
+<p class="sub">Mesmo CSS do bloco real. Cada linha é um instante do percurso, parado por atraso negativo. Duração total: 1,02 s.</p>
+
+<div class="tira" id="tira"></div>
+
+<script>
+var SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" class="main-svg" role="img" aria-label="Wrap N Glass">'
++ '<path class="path-draw p1" pathLength="1" fill="#002046" d="M7.68,66a1.68,1.68,0,0,1-1.55-3q5.37-3.28,11.21-6.44a260.73,260.73,0,0,1,88.43-28.75,1.67,1.67,0,0,1,1.5.57Q130.13,54.57,153,80.78a1.63,1.63,0,0,0,1.37.57c9.88-.66,20.21-1,30.95-1A460.49,460.49,0,0,1,243.51,84a1.69,1.69,0,0,1-.25,3.36H243c-14.57-.17-36.41-.33-63.73,4.09-11.06,1.79-20.16,3.87-26.49,5.46a1.69,1.69,0,0,1-1.7-.55l-48-56.76a1.7,1.7,0,0,0-1.54-.58c-10.41,1.55-21.39,3.63-32.84,6.4A373.86,373.86,0,0,0,7.68,66Z"/>'
++ '<path class="path-draw p2" pathLength="1" fill="#FF2362" d="M236.12,37.84l18.62,11.34a1.68,1.68,0,0,0,1,.24q10.35-.63,21.08-.87a557.26,557.26,0,0,1,111.51,8.79,1.69,1.69,0,0,0,.78-3.28l-1.44-.43C348.13,42,316.08,39.07,292.32,37,278,35.78,259.24,34.66,237,34.71A1.69,1.69,0,0,0,236.12,37.84Z"/>'
++ '<path class="path-draw p3" pathLength="1" fill="#002046" d="M220.42,9Q202.6,7.77,185.56,7.6c-66.2.72-84.65,2.38-84.7,4.09-.06,2.3,33.3,2.31,76.26,20.15l2.14.9a1.69,1.69,0,0,1-.57,3.24,414.45,414.45,0,0,0-49.07,5.58,1.7,1.7,0,0,0-1,2.78l18.12,20.78a1.63,1.63,0,0,0,1.45.56,420.84,420.84,0,0,1,97-.07q8.07.94,15.87,2.17a1.69,1.69,0,0,0,1.28-3C253.13,57.9,243.07,51,232.13,44.1Q222.38,38,213,32.74a1.68,1.68,0,0,1,.66-3.14,397.3,397.3,0,0,1,93.36.34c26.82,3.32,51,9.18,71.08,14.16,2.32.57,4.58,1.15,6.8,1.72a1.69,1.69,0,0,0,1-3.24A640.1,640.1,0,0,0,220.42,9Z"/>'
++ '<path class="path-draw p4" pathLength="1" fill="#FF2362" d="M101.22,47.55A414.7,414.7,0,0,0,21.15,76.38a1.69,1.69,0,0,0,.62,3.21c7.15.48,14.7,1.24,22.58,2.36q8.09,1.17,15.52,2.65a1.76,1.76,0,0,0,.82,0,480.2,480.2,0,0,1,57.59-14.38,1.7,1.7,0,0,0,1-2.75L102.92,48.1Z"/>'
++ '</svg>';
+var NOME = '<span class="brand-name"><span class="c-navy">WRAP</span><span class="c-pink">N</span><span class="c-navy">GLASS</span></span>';
+var fases = [
+  ['t0',    '0 ms',    'estado inicial — nada desenhado'],
+  ['t220',  '220 ms',  'traços 1 e 2 desenhando; 3 começando'],
+  ['t480',  '480 ms',  'os quatro traços em curso'],
+  ['t880',  '880 ms',  'traços preenchidos; nome entrando'],
+  ['t1100', '1 020 ms','fim — é assim que fica parado']
+];
+document.getElementById('tira').innerHTML = fases.map(function(f){
+  return '<div class="fase ' + f[0] + '">'
+       + '<div class="rot"><b>' + f[1] + '</b>' + f[2] + '</div>'
+       + '<div class="palco"><div class="brand-wrapper">'
+       + '<span class="logo-box">' + SVG + '</span>' + NOME
+       + '</div></div></div>';
+}).join('');
+</script>
+</body></html>

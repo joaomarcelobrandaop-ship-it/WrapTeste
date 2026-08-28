@@ -325,13 +325,19 @@ var wcpayAssets = {"url":"/wp-content/plugins/woocommerce-payments/dist/"};
 
 <script>
 /* Só anima na home, e só na primeira vez da sessão.
-   Qualquer erro aqui não faz nada — o logo já está visível. */
+   Qualquer erro aqui não faz nada — o logo já está visível.
+
+   ESCAPE PARA DEMONSTRAR: abrir a home com ?logo no fim do endereço
+   força a animação a tocar de novo, quantas vezes quiser.
+   Ex.: https://seusite.com/?logo
+   Serve para mostrar ao cliente sem precisar de aba anônima. */
 (function () {
   try {
     var eHome = document.body.classList.contains('home') ||
                 location.pathname === '/' || location.pathname === '/index.html';
     if (!eHome) return;
-    if (sessionStorage.getItem('wngLogoVisto')) return;
+    var forcar = location.search.indexOf('logo') > -1;
+    if (!forcar && sessionStorage.getItem('wngLogoVisto')) return;
     sessionStorage.setItem('wngLogoVisto', '1');
     var alvo = document.currentScript && document.currentScript.parentElement
              ? document.currentScript.parentElement.querySelector('.brand-wrapper')
@@ -340,6 +346,7 @@ var wcpayAssets = {"url":"/wp-content/plugins/woocommerce-payments/dist/"};
   } catch (e) { /* sessionStorage bloqueado: sem animação, logo visível */ }
 })();
 </script>
+
 
 
 
