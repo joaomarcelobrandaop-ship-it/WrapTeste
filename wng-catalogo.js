@@ -70,17 +70,37 @@
   ];
 
   /* ---------------------------------------------------------------
-     2. TAMANHOS — ⚠️ [PREENCHER] medidas e preços reais
+     2. TAMANHOS -- uma regua por familia
+
+     Nao da para usar a mesma escala nas tres: 60 cm nao serve para casco
+     de barco e 600 cm nao serve para janela.
+
+     `nome` e o que o cliente ve E o que vira o atributo no WooCommerce --
+     tem de bater com gerar-produtos.py. `conferir-catalogo.py` checa.
+
+     ⚠️ [A CONFIRMAR] com o dono. Os de vidro tem fonte (largura padrao de
+     rolo de pelicula); os de carro estao ancorados em medida de veiculo;
+     os de barco sao proposta nossa.
      --------------------------------------------------------------- */
-  /* Os nomes tem de bater EXATAMENTE com os de gerar-produtos.py: o link
-     do botao vira ?attribute_pa_size=<nome em minusculas>. Se divergirem,
-     o WooCommerce nao pre-seleciona nada. `conferir-catalogo.py` checa. */
-  var TAMANHOS = [
-    { id: 's',  nome: 'S',  medida: '[TO CONFIRM]' },
-    { id: 'm',  nome: 'M',  medida: '[TO CONFIRM]' },
-    { id: 'l',  nome: 'L',  medida: '[TO CONFIRM]' },
-    { id: 'xl', nome: 'XL', medida: '[TO CONFIRM]' }
-  ];
+  var TAMANHOS = {
+    'vehicle-wraps': [
+      { id: 'v60',  nome: '60 cm',  medida: 'door panel, accent' },
+      { id: 'v120', nome: '120 cm', medida: 'full door, hood' },
+      { id: 'v200', nome: '200 cm', medida: 'side section' },
+      { id: 'v300', nome: '300 cm', medida: 'full side, van' }
+    ],
+    'marine-wraps': [
+      { id: 'm150', nome: '150 cm', medida: 'transom, small panel' },
+      { id: 'm250', nome: '250 cm', medida: 'hull side, up to 6 m' },
+      { id: 'm400', nome: '400 cm', medida: 'hull side, up to 9 m' },
+      { id: 'm600', nome: '600 cm', medida: 'full hull side' }
+    ],
+    'architectural-glass': [
+      { id: 'g91',  nome: '91 cm',  medida: 'standard film width, 36 in' },
+      { id: 'g122', nome: '122 cm', medida: 'standard film width, 48 in' },
+      { id: 'g152', nome: '152 cm', medida: 'widest single sheet, 60 in' }
+    ]
+  };
 
   /* ---------------------------------------------------------------
      3. OS DESENHOS
@@ -217,6 +237,8 @@
     if (!fam) return;
 
     var padA = CORES[0], padB = CORES[1];
+    /* a regua de tamanho depende da familia desta pagina */
+    var TAMS = TAMANHOS[raiz.getAttribute('data-wng-catalogo')] || [];
 
     /* o aviso e o <h1> ficam no HTML estático da página, não aqui.
        Assim, se este script falhar, a página ainda tem cabeçalho e
@@ -257,7 +279,7 @@
     raiz.insertAdjacentHTML('beforeend', h);
 
     var painel = raiz.querySelector('.wcat-painel');
-    var atual = { d: null, a: padA, b: padB, t: TAMANHOS[1] };
+    var atual = { d: null, a: padA, b: padB, t: TAMS[1] || TAMS[0] };
 
     function amostras(alvo, sel, onde) {
       onde.innerHTML = CORES.map(function (c) {
@@ -293,7 +315,7 @@
         + ' · size ' + atual.t.nome + ' (' + atual.t.medida + ')';
       amostras('a', atual.a, document.getElementById('wcat-cA'));
       amostras('b', atual.b, document.getElementById('wcat-cB'));
-      document.getElementById('wcat-tam').innerHTML = TAMANHOS.map(function (t) {
+      document.getElementById('wcat-tam').innerHTML = TAMS.map(function (t) {
         return '<button type="button" class="wcat-tam' + (t.id === atual.t.id ? ' ativa' : '')
           + '" data-tam="' + t.id + '" aria-pressed="' + (t.id === atual.t.id) + '">'
           + t.nome + '<small>' + t.medida + '</small></button>';
@@ -321,7 +343,7 @@
       }
       var tm = e.target.closest('.wcat-tam');
       if (tm) {
-        atual.t = TAMANHOS.filter(function (x) { return x.id === tm.dataset.tam; })[0];
+        atual.t = TAMS.filter(function (x) { return x.id === tm.dataset.tam; })[0];
         repintar();
       }
     });
@@ -331,7 +353,7 @@
       paraCSV: function () {
         var l = ['Type,SKU,Name,Published,Parent,"Attribute 1 name","Attribute 1 value(s)","Attribute 1 visible","Attribute 1 global","Attribute 2 name","Attribute 2 value(s)","Attribute 2 visible","Attribute 2 global",Categories'];
         var cores = CORES.map(function (c) { return c.nome; }).join(', ');
-        var tams = TAMANHOS.map(function (t) { return t.nome; }).join(', ');
+        var tams = TAMS.map(function (t) { return t.nome; }).join(', ');
         fam.desenhos.forEach(function (d) {
           l.push(['variable', d.id, '"' + d.nome + '"', 1, '', 'Cor', '"' + cores + '"', 1, 1,
                   'Tamanho', '"' + tams + '"', 1, 1, '"' + fam.titulo + '"'].join(','));

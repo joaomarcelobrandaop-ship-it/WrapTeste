@@ -689,3 +689,25 @@ html a.wcat-cta.pronta span{ color:rgba(255,255,255,.92) }
 }
 html a.wcat-cta.pronta:focus-visible{ outline:3px solid var(--wng-navy); outline-offset:2px }
 @media (prefers-reduced-motion:reduce){ html a.wcat-cta.pronta{ transition:none } }
+
+/* =====================================================================
+   12. RITMO DO CABEÇALHO
+   ---------------------------------------------------------------------
+   Medido em 28/08/2026: o vão entre a marca e o menu era de 11px, contra
+   40px entre os itens do menu e 40px do menu até o carrinho. "Shop"
+   encostava no logotipo e parecia parte do nome da empresa.
+
+   O grupo de fora é flex com gap:0 — o 11px vinha de sobra de padding,
+   não de decisão. Agora o cabeçalho inteiro anda no mesmo compasso.
+   ===================================================================== */
+/* O bloco do menu carrega padding INLINE, posto pelo editor do WordPress:
+   style="padding-left:var(--wp--preset--spacing--30)". Estilo inline ganha
+   de qualquer regra de folha sem !important — então não adianta zerar.
+
+   Em vez de brigar, desconto: o gap do pai vale 40px MENOS o padding que o
+   filho já traz. Resultado exato de 40px, usando a variável do próprio tema
+   — se ele mudar o espaçamento, isto acompanha sozinho. */
+html header.site-header > .wp-block-group{
+  gap: calc(40px - var(--wp--preset--spacing--30, 0px));
+  flex-wrap: wrap;
+}
