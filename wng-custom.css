@@ -711,3 +711,79 @@ html header.site-header > .wp-block-group{
   gap: calc(40px - var(--wp--preset--spacing--30, 0px));
   flex-wrap: wrap;
 }
+
+/* =====================================================================
+   13. CARRINHO DE DEMONSTRAÇÃO  (só no espelho — ver ehEspelho() no JS)
+   ---------------------------------------------------------------------
+   O espelho é HTML estático: não há WooCommerce para processar compra.
+   Este carrinho roda no navegador, serve para clicar e para mostrar o
+   fluxo ao cliente. No site real ele nem carrega.
+   ===================================================================== */
+html #wcat-cesta{
+  position:fixed; right:20px; bottom:20px; z-index:60;
+  display:flex; align-items:center; gap:10px;
+  min-height:52px; padding:10px 20px; border:0; border-radius:26px;
+  background:var(--wng-navy); color:#fff; cursor:pointer;
+  font:800 15px/1 "Source Sans 3", system-ui, sans-serif;
+  box-shadow:0 10px 28px -10px rgba(0,32,70,.55);
+  transition:transform 160ms cubic-bezier(.23,1,.32,1);
+}
+html #wcat-cesta[hidden]{ display:none }
+html #wcat-cesta .wcat-cesta-n{
+  background:var(--wng-pink-superficie); border-radius:50%;
+  min-width:24px; height:24px; display:grid; place-items:center;
+  font-size:13px; font-weight:800;
+}
+@media (hover:hover) and (pointer:fine){
+  html #wcat-cesta:hover{ transform:translateY(-2px) }
+}
+html #wcat-cesta:focus-visible{ outline:3px solid var(--wng-pink-sobre-navy); outline-offset:3px }
+
+html #wcat-cesta-painel{
+  border:0; border-radius:12px; padding:0; width:min(560px,94vw);
+  max-height:88vh; overflow-y:auto; overflow-x:hidden;
+  box-shadow:0 26px 70px -24px rgba(0,32,70,.5);
+}
+html #wcat-cesta-painel::backdrop{ background:rgba(0,32,70,.55) }
+html .wcat-cesta-corpo{ padding:30px 30px 34px }
+html .wcat-cesta-corpo h2{
+  font-size:24px; font-weight:900; color:var(--wng-navy); margin:0 0 18px;
+}
+html .wcat-cesta-aviso{
+  background:#FFF6E8; border:1px solid #E9D5AE; border-left:4px solid #B07A16;
+  border-radius:6px; padding:13px 15px; margin:0 0 22px;
+  font-size:14px; line-height:1.55; color:#4A3A17;
+}
+html .wcat-cesta-lista ul{ list-style:none; margin:0; padding:0 }
+html .wcat-cesta-lista li{
+  display:flex; gap:16px; justify-content:space-between; align-items:flex-start;
+  padding:15px 0; border-bottom:1px solid var(--linha,#E3E7ED);
+}
+html .wcat-cesta-lista strong{ color:var(--wng-navy); font-size:17px }
+html .wcat-cesta-lista span{
+  font:700 12px/1 "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing:.08em; color:#5b6880;
+}
+html .wcat-cesta-lista small{ font-size:14px; color:#4a5568; line-height:1.5 }
+html .wcat-cesta-dir{ text-align:right; flex:0 0 auto }
+html .wcat-cesta-p{
+  display:block; font:800 17px/1 "Source Sans 3", sans-serif !important;
+  color:var(--wng-navy) !important; letter-spacing:0 !important;
+}
+html .wcat-cesta-q{ display:block; margin-top:4px }
+html .wcat-cesta-x{
+  margin-top:8px; min-height:44px; padding:6px 12px; cursor:pointer;
+  background:transparent; border:1.5px solid #D5DBE3; border-radius:8px;
+  font-size:13px; font-weight:700; color:var(--wng-pink-sobre-claro);
+}
+@media (hover:hover) and (pointer:fine){
+  html .wcat-cesta-x:hover{ border-color:var(--wng-pink-sobre-claro) }
+}
+html .wcat-cesta-x:focus-visible{ outline:3px solid var(--wng-pink-sobre-claro); outline-offset:2px }
+html .wcat-cesta-total{
+  margin:20px 0 22px; font-size:19px; color:#3d4757; display:flex;
+  justify-content:space-between; align-items:baseline;
+}
+html .wcat-cesta-total strong{ font-size:26px; font-weight:900; color:var(--wng-navy) }
+html .wcat-cesta-vazia{ color:#5b6880; margin:0 0 22px }
+@media (prefers-reduced-motion:reduce){ html #wcat-cesta{ transition:none } }

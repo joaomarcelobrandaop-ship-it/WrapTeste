@@ -49,6 +49,23 @@
      quando os slugs forem traduzidos vira /product/. Ver TAREFAS-NO-WORDPRESS. */
   var BASE_PRODUTO = '/producto/';
 
+
+  /* Precos de exemplo, um por tamanho. Tem de bater com gerar-produtos.py
+     -- `conferir-catalogo.py` compara. ⚠️ [A CONFIRMAR] com o dono. */
+  var PRECOS = {
+    'vehicle-wraps':       { '60 cm': 12, '120 cm': 18, '200 cm': 26, '300 cm': 34 },
+    'marine-wraps':        { '150 cm': 22, '250 cm': 32, '400 cm': 44, '600 cm': 58 },
+    'architectural-glass': { '91 cm': 16, '122 cm': 22, '152 cm': 28 }
+  };
+
+  /* O carrinho de demonstracao so roda no espelho. No site do cliente esta
+     funcao devolve false e nada disto aparece. */
+  function ehEspelho() {
+    var h = location.hostname;
+    return h === 'localhost' || h === '127.0.0.1' || h === '' ||
+           /\.vercel\.app$/.test(h);
+  }
+
   function paraSlug(t) {
     return String(t).toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
   }
@@ -291,20 +308,148 @@
     }
 
 
+
+    /* ==============================================================
+       CARRINHO DE DEMONSTRACAO  (so no espelho -- ver ehEspelho)
+       ============================================================== */
+    var CHAVE = 'wng-carrinho-demo';
+
+    function lerCarrinho() {
+      try { return JSON.parse(localStorage.getItem(CHAVE)) || []; }
+      catch (e) { return []; }
+    }
+    function gravarCarrinho(itens) {
+      try { localStorage.setItem(CHAVE, JSON.stringify(itens)); } catch (e) {}
+      pintarBotaoCarrinho();
+    }
+    function precoDe(d, t) {
+      var tab = PRECOS[raiz.getAttribute('data-wng-catalogo')] || {};
+      return tab[t.nome] || 0;
+    }
+    function totalCarrinho(itens) {
+      return itens.reduce(function (s, i) { return s + i.preco * i.qtd; }, 0);
+    }
+
+    function pintarBotaoCarrinho() {
+      var b = document.getElementById('wcat-cesta');
+      if (!b) return;
+      var itens = lerCarrinho();
+      var n = itens.reduce(function (s, i) { return s + i.qtd; }, 0);
+      b.hidden = n === 0;
+      b.querySelector('.wcat-cesta-n').textContent = n;
+      b.querySelector('.wcat-cesta-v').textContent =
+        '\u20ac' + totalCarrinho(itens).toFixed(2);
+      b.setAttribute('aria-label', n + ' item(s) in the demo cart, total \u20ac'
+        + totalCarrinho(itens).toFixed(2) + '. Open cart.');
+    }
+
+    function adicionar() {
+      var itens = lerCarrinho();
+      var sku = atual.d.id + ' \u00b7 ' + atual.a.nome + ' \u00b7 ' + atual.t.nome;
+      var achou = itens.filter(function (i) { return i.sku === sku; })[0];
+      if (achou) { achou.qtd += 1; }
+      else {
+        itens.push({ sku: sku, design: atual.d.nome, ref: atual.d.id,
+                     cor: atual.a.nome, destaque: atual.b.nome,
+                     tam: atual.t.nome, nota: atual.t.medida,
+                     preco: precoDe(atual.d, atual.t), qtd: 1 });
+      }
+      gravarCarrinho(itens);
+      painel.close();
+      abrirCesta();
+    }
+
+    function abrirCesta() {
+      var d = document.getElementById('wcat-cesta-painel');
+      var itens = lerCarrinho();
+      var corpo = d.querySelector('.wcat-cesta-lista');
+      if (!itens.length) {
+        corpo.innerHTML = '<p class="wcat-cesta-vazia">Nothing here yet.</p>';
+      } else {
+        corpo.innerHTML = '<ul>' + itens.map(function (i, k) {
+          return '<li><div><strong>' + i.design + '</strong> <span>' + i.ref
+            + '</span><br><small>' + i.cor + ' + ' + i.destaque + ' \u00b7 '
+            + i.tam + ' \u00b7 ' + i.nota + '</small></div>'
+            + '<div class="wcat-cesta-dir"><span class="wcat-cesta-p">\u20ac'
+            + (i.preco * i.qtd).toFixed(2) + '</span>'
+            + '<span class="wcat-cesta-q">\u00d7' + i.qtd + '</span>'
+            + '<button class="wcat-cesta-x" data-k="' + k
+            + '" aria-label="Remove ' + i.design + '">Remove</button></div></li>';
+        }).join('') + '</ul>'
+          + '<p class="wcat-cesta-total">Total <strong>\u20ac'
+          + totalCarrinho(itens).toFixed(2) + '</strong></p>';
+      }
+      if (!d.open) d.showModal();
+    }
+
+    function montarCesta() {
+      var b = document.createElement('button');
+      b.id = 'wcat-cesta';
+      b.type = 'button';
+      b.hidden = true;
+      b.innerHTML = '<span class="wcat-cesta-n">0</span>'
+        + '<span class="wcat-cesta-v">\u20ac0.00</span>';
+      document.body.appendChild(b);
+
+      var d = document.createElement('dialog');
+      d.id = 'wcat-cesta-painel';
+      d.innerHTML =
+        '<form method="dialog" class="wcat-fechar-form">'
+        + '<button class="wcat-fechar" aria-label="Close">&times;</button></form>'
+        + '<div class="wcat-cesta-corpo">'
+        + '<p class="wcat-cesta-aviso"><strong>Demonstration cart.</strong> '
+        + 'This runs in your browser only, on the preview site. On the live '
+        + 'site this is the WooCommerce cart. Prices are examples.</p>'
+        + '<h2>Your selection</h2>'
+        + '<div class="wcat-cesta-lista"></div>'
+        + '<button class="wcat-cta" type="button" disabled>Checkout '
+        + '<span>no payment method is connected yet</span></button>'
+        + '</div>';
+      document.body.appendChild(d);
+
+      b.addEventListener('click', abrirCesta);
+      d.addEventListener('click', function (e) {
+        if (e.target === d) { d.close(); return; }
+        var x = e.target.closest('.wcat-cesta-x');
+        if (x) {
+          var itens = lerCarrinho();
+          itens.splice(+x.dataset.k, 1);
+          gravarCarrinho(itens);
+          abrirCesta();
+        }
+      });
+      pintarBotaoCarrinho();
+    }
+
     function desenharAcao() {
       var alvo = document.getElementById('wcat-acao');
       if (!alvo) return;
+
+      /* 1. no espelho: carrinho de demonstracao, para dar para clicar */
+      if (ehEspelho()) {
+        var p = precoDe(atual.d, atual.t);
+        alvo.innerHTML = '<button class="wcat-cta pronta" type="button" '
+          + 'id="wcat-add">Add to cart <span>'
+          + (p ? '\u20ac' + p.toFixed(2) + ' \u00b7 example price \u00b7 '
+               : '') + 'demo</span></button>';
+        document.getElementById('wcat-add').addEventListener('click', adicionar);
+        return;
+      }
+
+      /* 2. site real, loja ainda sem produtos: explica, nao mente */
       if (!LOJA_PRONTA) {
         alvo.innerHTML = '<button class="wcat-cta" type="button" disabled>'
           + 'Add to cart <span>the shop has no products yet</span></button>';
         return;
       }
+
+      /* 3. site real com produtos: link com a variacao ja escolhida */
       var url = BASE_PRODUTO + paraSlug(atual.d.nome) + '/'
         + '?attribute_pa_colour=' + encodeURIComponent(paraSlug(atual.a.nome))
         + '&attribute_pa_size=' + encodeURIComponent(paraSlug(atual.t.nome));
       alvo.innerHTML = '<a class="wcat-cta pronta" href="' + url + '">'
-        + 'Add to cart <span>' + atual.d.nome + ' &middot; ' + atual.a.nome
-        + ' &middot; size ' + atual.t.nome + '</span></a>';
+        + 'Add to cart <span>' + atual.d.nome + ' \u00b7 ' + atual.a.nome
+        + ' \u00b7 size ' + atual.t.nome + '</span></a>';
     }
 
     function repintar() {
@@ -347,6 +492,8 @@
         repintar();
       }
     });
+
+    if (ehEspelho()) montarCesta();
 
     /* CSV do WooCommerce, para quando o projeto for adiante */
     window.wngCatalogo = {
