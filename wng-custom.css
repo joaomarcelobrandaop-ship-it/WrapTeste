@@ -676,3 +676,16 @@ html .wcat-noscript{
    existia na seção 1 e só não tinha sido aplicado aqui. Corrige as 14
    páginas de uma vez, porque o banner é o mesmo em todas. */
 html #wng-cookie-banner a{ color:var(--wng-pink-sobre-navy) }
+
+/* botão de compra quando a loja já tem produtos (ver LOJA_PRONTA no JS) */
+html a.wcat-cta.pronta{
+  background:var(--wng-pink-superficie); border:0; color:#fff;
+  cursor:pointer; text-decoration:none;
+  transition:background 160ms cubic-bezier(.23,1,.32,1);
+}
+html a.wcat-cta.pronta span{ color:rgba(255,255,255,.92) }
+@media (hover:hover) and (pointer:fine){
+  html a.wcat-cta.pronta:hover{ background:var(--wng-pink-fundo-hover) }
+}
+html a.wcat-cta.pronta:focus-visible{ outline:3px solid var(--wng-navy); outline-offset:2px }
+@media (prefers-reduced-motion:reduce){ html a.wcat-cta.pronta{ transition:none } }

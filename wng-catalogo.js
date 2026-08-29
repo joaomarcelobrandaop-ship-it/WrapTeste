@@ -34,6 +34,26 @@
   'use strict';
 
   /* ---------------------------------------------------------------
+     0. A LOJA JA TEM OS PRODUTOS?
+
+     false -> o botao explica que a compra ainda nao esta ligada
+     true  -> o botao vira link para a pagina do produto, com a cor e o
+              tamanho ja escolhidos
+
+     Virar para true DEPOIS de importar `produtos-wng.csv` no WooCommerce.
+     Antes disso o link levaria a uma pagina que nao existe.
+     --------------------------------------------------------------- */
+  var LOJA_PRONTA = false;
+
+  /* Prefixo das paginas de produto. Hoje o site usa /producto/ (espanhol);
+     quando os slugs forem traduzidos vira /product/. Ver TAREFAS-NO-WORDPRESS. */
+  var BASE_PRODUTO = '/producto/';
+
+  function paraSlug(t) {
+    return String(t).toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  }
+
+  /* ---------------------------------------------------------------
      1. PALETA — as cores que o cliente ofereceria
      As duas primeiras são as da marca; o resto são cores comuns de
      vinil automotivo. ⚠️ [PREENCHER] confirmar a cartela real dele.
@@ -52,11 +72,14 @@
   /* ---------------------------------------------------------------
      2. TAMANHOS — ⚠️ [PREENCHER] medidas e preços reais
      --------------------------------------------------------------- */
+  /* Os nomes tem de bater EXATAMENTE com os de gerar-produtos.py: o link
+     do botao vira ?attribute_pa_size=<nome em minusculas>. Se divergirem,
+     o WooCommerce nao pre-seleciona nada. `conferir-catalogo.py` checa. */
   var TAMANHOS = [
-    { id: 'p', nome: 'P',  medida: '[TO CONFIRM]' },
-    { id: 'm', nome: 'M',  medida: '[TO CONFIRM]' },
-    { id: 'g', nome: 'G',  medida: '[TO CONFIRM]' },
-    { id: 'xg',nome: 'XG', medida: '[TO CONFIRM]' }
+    { id: 's',  nome: 'S',  medida: '[TO CONFIRM]' },
+    { id: 'm',  nome: 'M',  medida: '[TO CONFIRM]' },
+    { id: 'l',  nome: 'L',  medida: '[TO CONFIRM]' },
+    { id: 'xl', nome: 'XL', medida: '[TO CONFIRM]' }
   ];
 
   /* ---------------------------------------------------------------
@@ -228,8 +251,7 @@
       + '      <div class="wcat-tams" id="wcat-tam"></div></fieldset>'
       + '    <p class="wcat-resumo" id="wcat-resumo"></p>'
       + '    <p class="wcat-precao">[TO CONFIRM] price</p>'
-      + '    <button class="wcat-cta" type="button" disabled>Add to cart '
-      + '<span>works on the live site, with WooCommerce</span></button>'
+      + '    <div id="wcat-acao"></div>'
       + '  </div></div></dialog>';
 
     raiz.insertAdjacentHTML('beforeend', h);
@@ -246,6 +268,23 @@
       }).join('');
     }
 
+
+    function desenharAcao() {
+      var alvo = document.getElementById('wcat-acao');
+      if (!alvo) return;
+      if (!LOJA_PRONTA) {
+        alvo.innerHTML = '<button class="wcat-cta" type="button" disabled>'
+          + 'Add to cart <span>the shop has no products yet</span></button>';
+        return;
+      }
+      var url = BASE_PRODUTO + paraSlug(atual.d.nome) + '/'
+        + '?attribute_pa_colour=' + encodeURIComponent(paraSlug(atual.a.nome))
+        + '&attribute_pa_size=' + encodeURIComponent(paraSlug(atual.t.nome));
+      alvo.innerHTML = '<a class="wcat-cta pronta" href="' + url + '">'
+        + 'Add to cart <span>' + atual.d.nome + ' &middot; ' + atual.a.nome
+        + ' &middot; size ' + atual.t.nome + '</span></a>';
+    }
+
     function repintar() {
       document.getElementById('wcat-previa').innerHTML =
         svg(atual.d, atual.a.hex, atual.b.hex, atual.d.nome + ' in ' + atual.a.nome + ' and ' + atual.b.nome);
@@ -259,6 +298,7 @@
           + '" data-tam="' + t.id + '" aria-pressed="' + (t.id === atual.t.id) + '">'
           + t.nome + '<small>' + t.medida + '</small></button>';
       }).join('');
+      desenharAcao();
     }
 
     raiz.addEventListener('click', function (e) {
